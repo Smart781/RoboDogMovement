@@ -1,0 +1,65 @@
+{
+    "AmyA": {
+        "checkpoints": [
+            {
+                "steps": 13499986,
+                "file_path": "results\\AmyA\\AmyA\\AmyA-13499986.onnx",
+                "reward": 8.92298225313425,
+                "creation_time": 1727867785.4534185,
+                "auxillary_file_paths": [
+                    "results\\AmyA\\AmyA\\AmyA-13499986.pt"
+                ]
+            },
+            {
+                "steps": 13999980,
+                "file_path": "results\\AmyA\\AmyA\\AmyA-13999980.onnx",
+                "reward": 8.80087435245514,
+                "creation_time": 1727870188.6286354,
+                "auxillary_file_paths": [
+                    "results\\AmyA\\AmyA\\AmyA-13999980.pt"
+                ]
+            },
+            {
+                "steps": 14499998,
+                "file_path": "results\\AmyA\\AmyA\\AmyA-14499998.onnx",
+                "reward": 8.918761730194092,
+                "creation_time": 1727872601.282885,
+                "auxillary_file_paths": [
+                    "results\\AmyA\\AmyA\\AmyA-14499998.pt"
+                ]
+            },
+            {
+                "steps": 14999963,
+                "file_path": "results\\AmyA\\AmyA\\AmyA-14999963.onnx",
+                "reward": 8.84889718145132,
+                "creation_time": 1727875010.2289035,
+                "auxillary_file_paths": [
+                    "results\\AmyA\\AmyA\\AmyA-14999963.pt"
+                ]
+            },
+            {
+                "steps": 15000027,
+                "file_path": "results\\AmyA\\AmyA\\AmyA-15000027.onnx",
+                "reward": 8.84889718145132,
+                "creation_time": 1727875010.2734315,
+                "auxillary_file_paths": [
+                    "results\\AmyA\\AmyA\\AmyA-15000027.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 15000027,
+            "file_path": "results\\AmyA\\AmyA.onnx",
+            "reward": 8.84889718145132,
+            "creation_time": 1727875010.2734315,
+            "auxillary_file_paths": [
+                "results\\AmyA\\AmyA\\AmyA-15000027.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.4.1+cpu"
+    }
+}

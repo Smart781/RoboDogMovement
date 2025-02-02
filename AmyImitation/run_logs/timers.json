@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1729114472",
+        "python_version": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\uniproj\\ml-agents-develop\\Project\\venv\\Scripts\\mlagents-learn config/AmyImitation.yaml --run-id=AmyImitation --force",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.4.1+cpu",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1729114535"
+    },
+    "total": 62.38492900000001,
+    "count": 1,
+    "self": 0.00445590000000351,
+    "children": {
+        "run_training.setup": {
+            "total": 0.09201590000000026,
+            "count": 1,
+            "self": 0.09201590000000026
+        },
+        "TrainerController.start_learning": {
+            "total": 62.2884572,
+            "count": 1,
+            "self": 0.00010739999999742622,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 62.288321499999995,
+                    "count": 1,
+                    "self": 62.288321499999995
+                },
+                "TrainerController._save_models": {
+                    "total": 2.8300000010972326e-05,
+                    "count": 1,
+                    "self": 2.8300000010972326e-05
+                }
+            }
+        }
+    }
+}

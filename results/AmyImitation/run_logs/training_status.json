@@ -1,0 +1,101 @@
+{
+    "AmyImitation": {
+        "checkpoints": [
+            {
+                "steps": 49981,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-49981.onnx",
+                "reward": -2.1500019133090973,
+                "creation_time": 1729707687.5763755,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-49981.pt"
+                ]
+            },
+            {
+                "steps": 99989,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-99989.onnx",
+                "reward": -3.093133360147476,
+                "creation_time": 1729707858.4253964,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-99989.pt"
+                ]
+            },
+            {
+                "steps": 149945,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-149945.onnx",
+                "reward": null,
+                "creation_time": 1729708029.4202838,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-149945.pt"
+                ]
+            },
+            {
+                "steps": 199980,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-199980.onnx",
+                "reward": null,
+                "creation_time": 1729708201.4310753,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-199980.pt"
+                ]
+            },
+            {
+                "steps": 249987,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-249987.onnx",
+                "reward": -8.408914860337973,
+                "creation_time": 1729708370.8139677,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-249987.pt"
+                ]
+            },
+            {
+                "steps": 299943,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-299943.onnx",
+                "reward": -2.8867352809756994,
+                "creation_time": 1729708541.904918,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-299943.pt"
+                ]
+            },
+            {
+                "steps": 349988,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-349988.onnx",
+                "reward": -5.434527195990086,
+                "creation_time": 1729708712.8739736,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-349988.pt"
+                ]
+            },
+            {
+                "steps": 399960,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-399960.onnx",
+                "reward": null,
+                "creation_time": 1729708883.3839068,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-399960.pt"
+                ]
+            },
+            {
+                "steps": 412108,
+                "file_path": "results\\AmyImitation\\AmyImitation\\AmyImitation-412108.onnx",
+                "reward": -48.220232374966145,
+                "creation_time": 1729708924.9282596,
+                "auxillary_file_paths": [
+                    "results\\AmyImitation\\AmyImitation\\AmyImitation-412108.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 412108,
+            "file_path": "results\\AmyImitation\\AmyImitation.onnx",
+            "reward": -48.220232374966145,
+            "creation_time": 1729708924.9282596,
+            "auxillary_file_paths": [
+                "results\\AmyImitation\\AmyImitation\\AmyImitation-412108.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.4.1+cpu"
+    }
+}

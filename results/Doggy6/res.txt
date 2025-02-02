@@ -1,0 +1,362 @@
+using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
+using System.Collections;
+using System;
+using Random = UnityEngine.Random;
+using UnityEngine.InputSystem;
+
+public class DoggyAgent : Agent
+{
+    [Header("Сервоприводы")]
+    public ArticulationBody[] legs;
+
+    [Header("Скорость работы сервоприводов")]
+    public float servoSpeed;
+
+    [Header("Тело")]
+    public ArticulationBody body;
+    private Vector3 defPos;
+    private Quaternion defRot;
+    public float strenghtMove;
+
+    [Header("Куб (цель)")]
+    public GameObject cube;
+
+    [Header("Сенсоры")]
+    public Unity.MLAgentsExamples.GroundContact[] groundContacts;
+
+    private float distToTarget = 0f;
+
+    //private Oscillator m_Oscillator;
+
+    public override void Initialize()
+    {
+        distToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
+        defRot = body.transform.rotation;
+        defPos = body.transform.position;
+
+        //m_Oscillator = GetComponent<Oscillator>(); ***
+        //m_Oscillator.ManagedReset(); ***
+    }
+
+    public void ResetDog()
+    {
+        Quaternion newRot = Quaternion.Euler(-90, 0, Random.Range(0f, 360f));
+
+
+        body.TeleportRoot(defPos, newRot);
+        //body.TeleportRoot(defPos, defRot); ***
+        body.velocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
+
+        for (int i = 0; i < 12; i++)
+        {
+            //MoveLeg(legs[i], Random.Range(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit));
+            MoveLeg(legs[i], 0);
+        }
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        ResetDog();
+        //m_Oscillator.ManagedReset(); ***
+
+        //cube.transform.position = new Vector3(5, 0.21f, Random.Range(-2f, 2f));
+        cube.transform.position = new Vector3(Random.Range(-7.5f, 7.5f), 0.21f, Random.Range(-7.5f, 7.5f));
+        //cube.transform.position = new Vector3(5f, 0.21f, 0); ***
+
+        //cube.transform.position = new Vector3(8f, 0.26f, 0f);
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(body.transform.position);
+        sensor.AddObservation(body.velocity);
+        sensor.AddObservation(body.angularVelocity);
+        sensor.AddObservation(body.transform.right);
+
+        // Позиция куба
+        sensor.AddObservation(cube.transform.position);
+
+        // Относительное положение куба
+        Vector3 relativePosition = cube.transform.position - body.transform.position;
+        sensor.AddObservation(relativePosition);
+
+        // Угловая позиция куба
+        Vector3 toCube = (cube.transform.position - body.transform.position).normalized;
+        float angleToCube = Vector3.SignedAngle(body.transform.right, toCube, Vector3.up);
+        sensor.AddObservation(angleToCube);
+
+        // Расстояние до куба
+        float distanceToCube = Vector3.Distance(body.transform.position, cube.transform.position);
+        sensor.AddObservation(distanceToCube);
+        foreach (var leg in legs)
+        {
+            sensor.AddObservation(leg.xDrive.target);
+            sensor.AddObservation(leg.velocity);
+            sensor.AddObservation(leg.angularVelocity);
+        }
+
+        foreach(var groundContact in groundContacts)
+        {
+            sensor.AddObservation(groundContact.touchingGround);
+        }
+    }
+
+    public override void OnActionReceived(ActionBuffers vectorAction)
+    {
+        var actions = vectorAction.ContinuousActions;
+        for (int i = 0; i < 12; i++)
+        {
+            float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+            MoveLeg(legs[i], angle);
+        }
+
+        //m_Oscillator.ManagedUpdate(); ***
+
+        float currentDistanceToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
+        float distanceReward = distToTarget - currentDistanceToTarget;
+        //AddReward(distanceReward);
+        distToTarget = currentDistanceToTarget;
+
+        if (currentDistanceToTarget < 1f)
+        {
+            AddReward(100.0f);
+            EndEpisode();
+        }
+
+        if (currentDistanceToTarget > 11f)
+        {
+            AddReward(-100.0f);
+            EndEpisode();
+        }
+
+        // if (distanceReward < 0)
+        // {
+        //     AddReward(-0.01f);
+        // }
+
+        // if (body.velocity.magnitude < 0.1f)
+        // {
+        //     AddReward(-0.01f);
+        // }
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+        //Debug.Log("Upper Limit of legs[0]: " + legs[6].xDrive.upperLimit);
+        //MoveLeg(legs[6], legs[6].xDrive.upperLimit);
+        continuousActions[0] = Input.GetAxisRaw("Horizontal");
+        continuousActions[1] = Input.GetAxisRaw("Vertical");
+    }
+    
+    public void FixedUpdate()
+    {
+        body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
+        for (int i = 0; i < 12; i++)
+        {
+           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+        }
+
+        RaycastHit hit;
+        if (Physics.Raycast(body.transform.position, body.transform.right, out hit))
+        {
+            if (hit.collider.gameObject == cube)
+            {
+                //AddReward(1f);
+                body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
+                for (int i = 0; i < 12; i++)
+                {
+                    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
+                }
+            }
+            else
+            {
+                //AddReward(-0.001f);
+            }
+        }
+        Debug.DrawRay(body.transform.position, body.transform.right, Color.white);
+    }
+
+    void MoveLeg(ArticulationBody leg, float targetAngle)
+    {
+        leg.GetComponent<Leg>().MoveLeg(targetAngle, servoSpeed);
+    }
+}
+
+
+
+
+
+
+(venv) C:\ML-Agents\ml-agents-develop\ml-agents-develop\Project>mlagents-learn config/AmyImitation.yaml --run-id=Doggy6
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\torch\__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\tensor\python_tensor.cpp:434.)
+  _C._set_default_tensor_type(t)
+
+            ┐  ╖
+        ╓╖╬│╡  ││╬╖╖
+    ╓╖╬│││││┘  ╬│││││╬╖
+ ╖╬│││││╬╜        ╙╬│││││╖╖                               ╗╗╗
+ ╬╬╬╬╖││╦╖        ╖╬││╗╣╣╣╬      ╟╣╣╬    ╟╣╣╣             ╜╜╜  ╟╣╣
+ ╬╬╬╬╬╬╬╬╖│╬╖╖╓╬╪│╓╣╣╣╣╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╒╣╣╖╗╣╣╣╗   ╣╣╣ ╣╣╣╣╣╣ ╟╣╣╖   ╣╣╣
+ ╬╬╬╬┐  ╙╬╬╬╬│╓╣╣╣╝╜  ╫╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╟╣╣╣╙ ╙╣╣╣  ╣╣╣ ╙╟╣╣╜╙  ╫╣╣  ╟╣╣
+ ╬╬╬╬┐     ╙╬╬╣╣      ╫╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╟╣╣╬   ╣╣╣  ╣╣╣  ╟╣╣     ╣╣╣┌╣╣╜
+ ╬╬╬╜       ╬╬╣╣      ╙╝╣╣╬      ╙╣╣╣╗╖╓╗╣╣╣╜ ╟╣╣╬   ╣╣╣  ╣╣╣  ╟╣╣╦╓    ╣╣╣╣╣
+ ╙   ╓╦╖    ╬╬╣╣   ╓╗╗╖            ╙╝╣╣╣╣╝╜   ╘╝╝╜   ╝╝╝  ╝╝╝   ╙╣╣╣    ╟╣╣╣
+   ╩╬╬╬╬╬╬╦╦╬╬╣╣╗╣╣╣╣╣╣╣╝                                             ╫╣╣╣╣
+      ╙╬╬╬╬╬╬╬╣╣╣╣╣╣╝╜
+          ╙╬╬╬╣╣╣╜
+             ╙
+
+ Version information:
+  ml-agents: 0.30.0,
+  ml-agents-envs: 0.30.0,
+  Communicator API: 1.5.0,
+  PyTorch: 2.5.1+cpu
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\torch\__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\tensor\python_tensor.cpp:434.)
+  _C._set_default_tensor_type(t)
+[INFO] Listening on port 5004. Start training by pressing the Play button in the Unity Editor.
+[INFO] Connected to Unity environment with package version 3.0.0-exp.1 and communication version 1.5.0
+[INFO] Connected new brain: AmyImitation?team=0
+[INFO] Hyperparameters for behavior name AmyImitation:
+        trainer_type:   ppo
+        hyperparameters:
+          batch_size:   128
+          buffer_size:  2048
+          learning_rate:        0.0003
+          beta: 0.0005
+          epsilon:      0.2
+          lambd:        0.95
+          num_epoch:    3
+          shared_critic:        False
+          learning_rate_schedule:       constant
+          beta_schedule:        constant
+          epsilon_schedule:     constant
+        network_settings:
+          normalize:    True
+          hidden_units: 128
+          num_layers:   2
+          vis_encode_type:      simple
+          memory:       None
+          goal_conditioning_type:       hyper
+          deterministic:        False
+        reward_signals:
+          extrinsic:
+            gamma:      0.99
+            strength:   1.0
+            network_settings:
+              normalize:        False
+              hidden_units:     128
+              num_layers:       2
+              vis_encode_type:  simple
+              memory:   None
+              goal_conditioning_type:   hyper
+              deterministic:    False
+        init_path:      None
+        keep_checkpoints:       100
+        checkpoint_interval:    50000
+        max_steps:      1000000
+        time_horizon:   64
+        summary_freq:   15000
+        threaded:       True
+        self_play:      None
+        behavioral_cloning:
+          demo_path:    Assets/Demonstrations/AmyIm2.demo
+          steps:        1000000
+          strength:     0.5
+          samples_per_update:   0
+          num_epoch:    None
+          batch_size:   None
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\mlagents\trainers\torch_entities\utils.py:289: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\aten\src\ATen\native\TensorShape.cpp:3687.)
+  torch.nn.functional.one_hot(_act.T, action_size[i]).float()
+[INFO] AmyImitation. Step: 15000. Time Elapsed: 254.222 s. Mean Reward: 1.441. Std of Reward: 15.519. Training.
+[INFO] AmyImitation. Step: 30000. Time Elapsed: 499.746 s. Mean Reward: 3.381. Std of Reward: 20.578. Training.
+[INFO] AmyImitation. Step: 45000. Time Elapsed: 719.075 s. Mean Reward: 2.933. Std of Reward: 19.544. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-49990.onnx
+[INFO] AmyImitation. Step: 60000. Time Elapsed: 945.018 s. Mean Reward: 1.529. Std of Reward: 15.788. Training.
+[INFO] AmyImitation. Step: 75000. Time Elapsed: 1163.058 s. Mean Reward: 0.935. Std of Reward: 13.855. Training.
+[INFO] AmyImitation. Step: 90000. Time Elapsed: 1381.686 s. Mean Reward: 2.090. Std of Reward: 17.399. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-99953.onnx
+[INFO] AmyImitation. Step: 105000. Time Elapsed: 1600.297 s. Mean Reward: 3.638. Std of Reward: 21.147. Training.
+[INFO] AmyImitation. Step: 120000. Time Elapsed: 1821.900 s. Mean Reward: 2.072. Std of Reward: 18.862. Training.
+[INFO] AmyImitation. Step: 135000. Time Elapsed: 2037.830 s. Mean Reward: 2.165. Std of Reward: 17.603. Training.
+[INFO] AmyImitation. Step: 150000. Time Elapsed: 2254.870 s. Mean Reward: 0.591. Std of Reward: 12.584. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-149972.onnx
+[INFO] AmyImitation. Step: 165000. Time Elapsed: 2471.962 s. Mean Reward: 1.737. Std of Reward: 16.406. Training.
+[INFO] AmyImitation. Step: 180000. Time Elapsed: 2717.114 s. Mean Reward: 2.013. Std of Reward: 17.188. Training.
+[INFO] AmyImitation. Step: 195000. Time Elapsed: 2967.540 s. Mean Reward: 2.217. Std of Reward: 17.742. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-199938.onnx
+[INFO] AmyImitation. Step: 210000. Time Elapsed: 3213.223 s. Mean Reward: 1.856. Std of Reward: 16.750. Training.
+[INFO] AmyImitation. Step: 225000. Time Elapsed: 3454.983 s. Mean Reward: 2.791. Std of Reward: 19.203. Training.
+[INFO] AmyImitation. Step: 240000. Time Elapsed: 3695.459 s. Mean Reward: 2.470. Std of Reward: 21.779. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-249937.onnx
+[INFO] AmyImitation. Step: 255000. Time Elapsed: 3911.215 s. Mean Reward: 4.881. Std of Reward: 23.657. Training.
+[INFO] AmyImitation. Step: 270000. Time Elapsed: 4120.648 s. Mean Reward: 7.415. Std of Reward: 27.915. Training.
+[INFO] AmyImitation. Step: 285000. Time Elapsed: 4332.544 s. Mean Reward: 4.753. Std of Reward: 30.360. Training.
+[INFO] AmyImitation. Step: 300000. Time Elapsed: 4545.438 s. Mean Reward: 11.364. Std of Reward: 39.737. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-299966.onnx
+[INFO] AmyImitation. Step: 315000. Time Elapsed: 4757.436 s. Mean Reward: 7.414. Std of Reward: 27.916. Training.
+[INFO] AmyImitation. Step: 330000. Time Elapsed: 4970.518 s. Mean Reward: 6.044. Std of Reward: 25.731. Training.
+[INFO] AmyImitation. Step: 345000. Time Elapsed: 5182.286 s. Mean Reward: 22.636. Std of Reward: 42.764. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-349996.onnx
+[INFO] AmyImitation. Step: 360000. Time Elapsed: 5392.239 s. Mean Reward: 12.061. Std of Reward: 33.848. Training.
+[INFO] AmyImitation. Step: 375000. Time Elapsed: 5601.488 s. Mean Reward: 6.389. Std of Reward: 26.302. Training.
+[INFO] AmyImitation. Step: 390000. Time Elapsed: 5813.789 s. Mean Reward: 4.939. Std of Reward: 23.765. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-399948.onnx
+[INFO] AmyImitation. Step: 405000. Time Elapsed: 6019.887 s. Mean Reward: 7.684. Std of Reward: 28.266. Training.
+[INFO] AmyImitation. Step: 420000. Time Elapsed: 6229.020 s. Mean Reward: -0.931. Std of Reward: 26.969. Training.
+[INFO] AmyImitation. Step: 435000. Time Elapsed: 6436.725 s. Mean Reward: 13.138. Std of Reward: 35.047. Training.
+[INFO] AmyImitation. Step: 450000. Time Elapsed: 6645.607 s. Mean Reward: 20.419. Std of Reward: 41.097. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-449989.onnx
+[INFO] AmyImitation. Step: 465000. Time Elapsed: 6856.945 s. Mean Reward: 14.332. Std of Reward: 36.201. Training.
+[INFO] AmyImitation. Step: 480000. Time Elapsed: 7063.973 s. Mean Reward: 10.276. Std of Reward: 31.723. Training.
+[INFO] AmyImitation. Step: 495000. Time Elapsed: 7273.040 s. Mean Reward: 10.249. Std of Reward: 31.732. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-499973.onnx
+[INFO] AmyImitation. Step: 510000. Time Elapsed: 7482.548 s. Mean Reward: 9.856. Std of Reward: 31.227. Training.
+[INFO] AmyImitation. Step: 525000. Time Elapsed: 7692.496 s. Mean Reward: 12.863. Std of Reward: 34.626. Training.
+[INFO] AmyImitation. Step: 540000. Time Elapsed: 7901.228 s. Mean Reward: 6.571. Std of Reward: 45.829. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-549938.onnx
+[INFO] AmyImitation. Step: 555000. Time Elapsed: 8112.463 s. Mean Reward: 5.865. Std of Reward: 25.161. Training.
+[INFO] AmyImitation. Step: 570000. Time Elapsed: 8322.529 s. Mean Reward: 13.570. Std of Reward: 35.287. Training.
+[INFO] AmyImitation. Step: 585000. Time Elapsed: 8532.389 s. Mean Reward: 8.362. Std of Reward: 28.981. Training.
+[INFO] AmyImitation. Step: 600000. Time Elapsed: 8741.226 s. Mean Reward: -0.556. Std of Reward: 0.498. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-599974.onnx
+[INFO] AmyImitation. Step: 615000. Time Elapsed: 8950.157 s. Mean Reward: 6.999. Std of Reward: 26.850. Training.
+[INFO] AmyImitation. Step: 630000. Time Elapsed: 9159.421 s. Mean Reward: 28.142. Std of Reward: 45.449. Training.
+[INFO] AmyImitation. Step: 645000. Time Elapsed: 9370.174 s. Mean Reward: 0.000. Std of Reward: 0.000. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-649964.onnx
+[INFO] AmyImitation. Step: 660000. Time Elapsed: 9577.660 s. Mean Reward: 28.428. Std of Reward: 45.267. Training.
+[INFO] AmyImitation. Step: 675000. Time Elapsed: 9793.577 s. Mean Reward: -0.626. Std of Reward: 0.485. Training.
+[INFO] AmyImitation. Step: 690000. Time Elapsed: 10033.893 s. Mean Reward: -0.445. Std of Reward: 0.497. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-699965.onnx
+[INFO] AmyImitation. Step: 705000. Time Elapsed: 10268.877 s. Mean Reward: 33.333. Std of Reward: 47.140. Training.
+[INFO] AmyImitation. Step: 720000. Time Elapsed: 10503.030 s. Mean Reward: 0.000. Std of Reward: 0.000. Training.
+[INFO] AmyImitation. Step: 735000. Time Elapsed: 10737.983 s. Mean Reward: -0.200. Std of Reward: 0.400. Training.
+[INFO] AmyImitation. Step: 750000. Time Elapsed: 10976.487 s. Mean Reward: -0.168. Std of Reward: 0.373. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-749994.onnx
+[INFO] AmyImitation. Step: 765000. Time Elapsed: 11208.456 s. Mean Reward: 16.667. Std of Reward: 37.268. Training.
+[INFO] AmyImitation. Step: 780000. Time Elapsed: 11441.861 s. Mean Reward: -0.334. Std of Reward: 0.472. Training.
+[INFO] AmyImitation. Step: 795000. Time Elapsed: 11675.136 s. Mean Reward: -0.167. Std of Reward: 0.374. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-799978.onnx
+[INFO] AmyImitation. Step: 810000. Time Elapsed: 11911.019 s. Mean Reward: 16.667. Std of Reward: 37.268. Training.
+[INFO] AmyImitation. Step: 825000. Time Elapsed: 12144.113 s. Mean Reward: 4.832. Std of Reward: 23.085. Training.
+[INFO] AmyImitation. Step: 840000. Time Elapsed: 12383.904 s. Mean Reward: 0.593. Std of Reward: 12.578. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-849951.onnx
+[INFO] AmyImitation. Step: 855000. Time Elapsed: 12621.514 s. Mean Reward: 1.258. Std of Reward: 14.914. Training.
+[INFO] AmyImitation. Step: 870000. Time Elapsed: 12881.179 s. Mean Reward: 0.437. Std of Reward: 11.962. Training.
+[INFO] AmyImitation. Step: 885000. Time Elapsed: 13134.645 s. Mean Reward: 0.372. Std of Reward: 11.690. Training.
+[INFO] AmyImitation. Step: 900000. Time Elapsed: 13410.044 s. Mean Reward: 0.510. Std of Reward: 12.257. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-899998.onnx
+[INFO] AmyImitation. Step: 915000. Time Elapsed: 13689.831 s. Mean Reward: 0.302. Std of Reward: 11.395. Training.
+[INFO] AmyImitation. Step: 930000. Time Elapsed: 13959.274 s. Mean Reward: 0.669. Std of Reward: 12.875. Training.
+[INFO] AmyImitation. Step: 945000. Time Elapsed: 14207.652 s. Mean Reward: 0.085. Std of Reward: 10.418. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-949968.onnx
+[INFO] AmyImitation. Step: 960000. Time Elapsed: 14422.392 s. Mean Reward: 1.501. Std of Reward: 15.662. Training.
+[INFO] AmyImitation. Step: 975000. Time Elapsed: 14641.321 s. Mean Reward: 0.489. Std of Reward: 12.163. Training.
+[INFO] AmyImitation. Step: 990000. Time Elapsed: 14857.419 s. Mean Reward: 1.678. Std of Reward: 16.216. Training.
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-999956.onnx
+[INFO] Exported results\Doggy6\AmyImitation\AmyImitation-1000020.onnx
+[INFO] Copied results\Doggy6\AmyImitation\AmyImitation-1000020.onnx to results\Doggy6\AmyImitation.onnx.

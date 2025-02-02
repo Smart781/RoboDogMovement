@@ -1,0 +1,29 @@
+{
+    "AmyIm": {
+        "checkpoints": [
+            {
+                "steps": 325736,
+                "file_path": "results\\AmyIm\\AmyIm\\AmyIm-325736.onnx",
+                "reward": null,
+                "creation_time": 1728591871.5484867,
+                "auxillary_file_paths": [
+                    "results\\AmyIm\\AmyIm\\AmyIm-325736.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 325736,
+            "file_path": "results\\AmyIm\\AmyIm.onnx",
+            "reward": null,
+            "creation_time": 1728591871.5484867,
+            "auxillary_file_paths": [
+                "results\\AmyIm\\AmyIm\\AmyIm-325736.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.4.1+cpu"
+    }
+}

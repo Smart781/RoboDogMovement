@@ -1,0 +1,65 @@
+{
+    "Amy": {
+        "checkpoints": [
+            {
+                "steps": 8499948,
+                "file_path": "results\\Amy\\Amy\\Amy-8499948.onnx",
+                "reward": 1.023236632347107,
+                "creation_time": 1727776356.5101163,
+                "auxillary_file_paths": [
+                    "results\\Amy\\Amy\\Amy-8499948.pt"
+                ]
+            },
+            {
+                "steps": 8999966,
+                "file_path": "results\\Amy\\Amy\\Amy-8999966.onnx",
+                "reward": 9.270150899887085,
+                "creation_time": 1727778952.0660717,
+                "auxillary_file_paths": [
+                    "results\\Amy\\Amy\\Amy-8999966.pt"
+                ]
+            },
+            {
+                "steps": 9499987,
+                "file_path": "results\\Amy\\Amy\\Amy-9499987.onnx",
+                "reward": 9.403204798698425,
+                "creation_time": 1727781547.8581762,
+                "auxillary_file_paths": [
+                    "results\\Amy\\Amy\\Amy-9499987.pt"
+                ]
+            },
+            {
+                "steps": 9999987,
+                "file_path": "results\\Amy\\Amy\\Amy-9999987.onnx",
+                "reward": 9.598797678947449,
+                "creation_time": 1727784143.8604095,
+                "auxillary_file_paths": [
+                    "results\\Amy\\Amy\\Amy-9999987.pt"
+                ]
+            },
+            {
+                "steps": 10000029,
+                "file_path": "results\\Amy\\Amy\\Amy-10000029.onnx",
+                "reward": 9.58001358807087,
+                "creation_time": 1727784143.914414,
+                "auxillary_file_paths": [
+                    "results\\Amy\\Amy\\Amy-10000029.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10000029,
+            "file_path": "results\\Amy\\Amy.onnx",
+            "reward": 9.58001358807087,
+            "creation_time": 1727784143.914414,
+            "auxillary_file_paths": [
+                "results\\Amy\\Amy\\Amy-10000029.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.4.1+cpu"
+    }
+}

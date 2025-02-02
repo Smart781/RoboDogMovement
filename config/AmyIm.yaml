@@ -1,0 +1,15 @@
+behaviors:
+  AmyIm:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 64
+      buffer_size: 1024
+      learning_rate: 3.0e-4
+    network_settings:
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+    max_steps: 15000000
+    behavioral_cloning:
+      strength: 1.0
+      demo_path: "Assets/Demonstrations/Amy2.demo"

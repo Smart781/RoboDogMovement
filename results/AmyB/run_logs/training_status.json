@@ -1,0 +1,65 @@
+{
+    "AmyB": {
+        "checkpoints": [
+            {
+                "steps": 13499993,
+                "file_path": "results\\AmyB\\AmyB\\AmyB-13499993.onnx",
+                "reward": 9.697334825992584,
+                "creation_time": 1728207121.019608,
+                "auxillary_file_paths": [
+                    "results\\AmyB\\AmyB\\AmyB-13499993.pt"
+                ]
+            },
+            {
+                "steps": 13999964,
+                "file_path": "results\\AmyB\\AmyB\\AmyB-13999964.onnx",
+                "reward": 9.748417752129692,
+                "creation_time": 1728209581.658255,
+                "auxillary_file_paths": [
+                    "results\\AmyB\\AmyB\\AmyB-13999964.pt"
+                ]
+            },
+            {
+                "steps": 14499974,
+                "file_path": "results\\AmyB\\AmyB\\AmyB-14499974.onnx",
+                "reward": 9.937087059020996,
+                "creation_time": 1728212025.231234,
+                "auxillary_file_paths": [
+                    "results\\AmyB\\AmyB\\AmyB-14499974.pt"
+                ]
+            },
+            {
+                "steps": 14999955,
+                "file_path": "results\\AmyB\\AmyB\\AmyB-14999955.onnx",
+                "reward": 9.700497758799585,
+                "creation_time": 1728214467.2019925,
+                "auxillary_file_paths": [
+                    "results\\AmyB\\AmyB\\AmyB-14999955.pt"
+                ]
+            },
+            {
+                "steps": 15000019,
+                "file_path": "results\\AmyB\\AmyB\\AmyB-15000019.onnx",
+                "reward": 9.700497758799585,
+                "creation_time": 1728214467.2407954,
+                "auxillary_file_paths": [
+                    "results\\AmyB\\AmyB\\AmyB-15000019.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 15000019,
+            "file_path": "results\\AmyB\\AmyB.onnx",
+            "reward": 9.700497758799585,
+            "creation_time": 1728214467.2407954,
+            "auxillary_file_paths": [
+                "results\\AmyB\\AmyB\\AmyB-15000019.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.4.1+cpu"
+    }
+}
