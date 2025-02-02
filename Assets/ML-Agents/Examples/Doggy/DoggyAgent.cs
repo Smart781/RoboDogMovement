@@ -39,6 +39,9 @@ public class DoggyAgent : Agent
     private int currentLeftStep = 0;
     //private bool change = false;
     private float ang = 10f;
+    private int pred_ind = -1;
+    private float pred_speed = 1f;
+    private bool compl = false; 
 
     public override void Initialize()
     {
@@ -158,16 +161,26 @@ public class DoggyAgent : Agent
             }
         }
 
-        if (val >= 0.5) {
-            float speed = ((actions[3 + ind] * 1f) + 1) / 2;
-            if (ind == 0) {
-                while (!MoveForward(speed)) {}
+        if (compl) {
+            bool res = false;
+            if (pred_ind == 0) {
+                res = MoveForward(pred_speed);
             }
-            else if (ind == 1) {
-                while (!MoveRight(speed)) {}
+            else if (pred_ind == 1) {
+                res = MoveRight(pred_speed);
             }
             else {
-                while (!MoveLeft(speed)) {}
+                res = MoveLeft(pred_speed);
+            }
+            if (res) {
+                compl = false;
+            }
+        }
+        else {
+            if (val >= 0.5) {
+                pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
+                pred_ind = ind;
+                compl = true; 
             }
         }
 
