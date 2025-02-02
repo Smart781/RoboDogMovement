@@ -431,11 +431,6 @@ public class DoggyAgent : Agent
                 MoveLeg(legs[2], 0);
                 MoveLeg(legs[3], 0);
             }
-            else if (currentRightStep == 7)
-            {
-                // Движение второй группы лап
-                ApplySinMovement4(new[] { 9, 10 });
-            }
         }
     } 
 
@@ -504,11 +499,6 @@ public class DoggyAgent : Agent
                 MoveLeg(legs[1], 0);
                 MoveLeg(legs[3], 0);
                 MoveLeg(legs[2], 0);
-            }
-            else if (currentLeftStep == 7)
-            {
-                // Движение второй группы лап
-                ApplySinMovement4(new[] { 9, 10 });
             }
         }
     }
