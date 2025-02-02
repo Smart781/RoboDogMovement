@@ -203,7 +203,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 1;
+            actions[index] = 1f;
         }
     }
 
@@ -212,7 +212,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 1;
+            actions[index] = 1f;
         }
     }
 
@@ -221,7 +221,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = -0.75f;
+            actions[index] = 0.2f;
         }
     }
 
