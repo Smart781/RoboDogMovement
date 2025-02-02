@@ -31,8 +31,9 @@ public class DoggyAgent : Agent
 
     //private Oscillator m_Oscillator;
 
-    //private float lastUpdateTime = 0f; // Время последнего обновления
-    //private int currentStep = 0; // Текущий этап движений
+    private float lastUpdateTime = 0f; // Время последнего обновления
+    private int currentStep = 0; // Текущий этап движений
+    private bool change = false;
 
     public override void Initialize()
     {
@@ -59,6 +60,11 @@ public class DoggyAgent : Agent
             //MoveLeg(legs[i], Random.Range(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit));
             MoveLeg(legs[i], 0);
         }
+
+        change = true;
+
+        // MoveLeg(legs[8], 90);
+        // MoveLeg(legs[11], 90);
     }
 
     public override void OnEpisodeBegin()
@@ -111,11 +117,25 @@ public class DoggyAgent : Agent
     public override void OnActionReceived(ActionBuffers vectorAction)
     {
         var actions = vectorAction.ContinuousActions;
+
         for (int i = 0; i < 12; i++)
         {
             float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
             MoveLeg(legs[i], angle);
+            // if ((i % 4) != 0 && (i % 4) != 3) {
+            //     if (i % 4 == 1) {
+            //         float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+            //         MoveLeg(legs[i], angle);
+            //     }
+            //     else {
+            //         float angle = Mathf.Lerp(legs[i - 1].xDrive.lowerLimit, legs[i - 1].xDrive.upperLimit, (actions[i - 1] + 1) * 0.5f);
+            //         MoveLeg(legs[i], angle);
+            //     }
+            // }
         }
+        
+        // MoveLeg(legs[8], 90);
+        // MoveLeg(legs[11], 90);
 
         //m_Oscillator.ManagedUpdate(); ***
 
@@ -162,7 +182,8 @@ public class DoggyAgent : Agent
         foreach (var index in indices)
         {
             //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
-            actions[index] = Mathf.Sin(Mathf.PI / 6);
+            //actions[index] = Mathf.Sin(Mathf.PI / 15);
+            actions[index] = 0.5f;
         }
     }
 
@@ -172,7 +193,8 @@ public class DoggyAgent : Agent
         foreach (var index in indices)
         {
             //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
-            actions[index] = Mathf.Sin(Mathf.PI / 100);
+            //actions[index] = -Mathf.Sin(Mathf.PI / 20);
+            actions[index] = 0.5f;
         }
     }
 
@@ -181,7 +203,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 6) * (-1);
+            actions[index] = 1;
         }
     }
 
@@ -190,7 +212,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 6);
+            actions[index] = 1;
         }
     }
 
@@ -199,7 +221,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 3) * (-1);
+            actions[index] = -0.75f;
         }
     }
 
@@ -208,7 +230,7 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 3) * (-1);
+            actions[index] = 0.5f;
         }
     }
 
@@ -216,47 +238,78 @@ public class DoggyAgent : Agent
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
-        // // Период между обновлениями в секундах
-        // const float stepDuration = 1f;
-        //float currentTime = Time.time;
+        if (change) {
+            Debug.Log("YES");
+            ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
+            ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
+            ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+            //change = false;
+        }
 
-        // // Проверяем, прошло ли достаточно времени для следующего этапа
-        // if (currentTime - lastUpdateTime >= stepDuration)
-        // {
-        //     lastUpdateTime = currentTime;
+        // Период между обновлениями в секундах
+        const float stepDuration = 0.05f;
+        float currentTime = Time.time;
 
-        //     // Обновляем текущий этап (циклическое переключение между 0 и 1)
-        //     currentStep = (currentStep + 1) % 4;
-        // }
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateTime >= stepDuration)
+        {
+            lastUpdateTime = currentTime;
 
-        // // Настройка движений в зависимости от этапа
-        // if (currentStep == 0)
-        // {
-        //     // Движение первой группы лап
-        //     ApplySinMovement1(continuousActions, new[] { 4, 7 });
-        // }
-        // else if (currentStep == 1)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement2(continuousActions, new[] { 8, 11 });
-        // }
-        // else if (currentStep == 2)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement3(continuousActions, new[] { 4, 7 });
-        // }
-        // else if (currentStep == 3)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement4(continuousActions, new[] { 8, 11 });
-        // }
+            // Обновляем текущий этап (циклическое переключение между 0 и 1)
+            currentStep = (currentStep + 1) % 8;
+        }
 
-        ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
-        ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
-        ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+        // Настройка движений в зависимости от этапа
+        if (currentStep == 0)
+        {
+            // Движение первой группы лап
+            ApplySinMovement1(continuousActions, new[] { 4, 7 });
+        }
+        else if (currentStep == 1)
+        {
+            // Движение второй группы лап
+            ApplySinMovement2(continuousActions, new[] { 8, 11 });
+        }
+        else if (currentStep == 2)
+        {
+            // Движение второй группы лап
+            ApplySinMovement3(continuousActions, new[] { 4, 7 });
+        }
+        else if (currentStep == 3)
+        {
+            // Движение второй группы лап
+            ApplySinMovement4(continuousActions, new[] { 8, 11 });
+        }
+        else if (currentStep == 4)
+        {
+            // Движение первой группы лап
+            ApplySinMovement1(continuousActions, new[] { 5, 6 });
+        }
+        else if (currentStep == 5)
+        {
+            // Движение второй группы лап
+            ApplySinMovement2(continuousActions, new[] { 9, 10 });
+        }
+        else if (currentStep == 6)
+        {
+            // Движение второй группы лап
+            ApplySinMovement3(continuousActions, new[] { 5, 6 });
+        }
+        else if (currentStep == 7)
+        {
+            // Движение второй группы лап
+            ApplySinMovement4(continuousActions, new[] { 9, 10 });
+        }
 
-        continuousActions[8] = Input.GetAxisRaw("Horizontal");
-        continuousActions[11] = Input.GetAxisRaw("Vertical");
+        // ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
+        // ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
+        // ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+        // MoveLeg(legs[11], 90);
+        //MoveLeg(legs[8], 90);
+        // MoveLeg(legs[11], 90);
+
+        // continuousActions[8] = Input.GetAxisRaw("Horizontal");
+        // continuousActions[11] = Input.GetAxisRaw("Vertical");
     }
     
     public void FixedUpdate()
@@ -284,6 +337,13 @@ public class DoggyAgent : Agent
                 //AddReward(-0.001f);
             }
         }
+        // if (Math.Abs(-0.03 - body.transform.position.z) >= 0.02) {
+        //     AddReward(-100f);
+        //     EndEpisode();
+        // }
+        // if (Math.Abs(-0.03 - body.transform.position.z) <= 0.03) {
+        //     AddReward(1f);
+        // }
         Debug.DrawRay(body.transform.position, body.transform.right, Color.white);
     }
 
