@@ -415,7 +415,7 @@ public class DoggyAgent : Agent
             {
                 // Движение первой группы лап
                 MoveLeg(legs[1], -ang);
-                MoveLeg(legs[2], ang);
+                MoveLeg(legs[3], -ang);
             }
             else if (currentRightStep == 5)
             {
@@ -439,86 +439,86 @@ public class DoggyAgent : Agent
         }
     } 
 
-    // private void MoveLeft(float speed)
-    // {
-    //     // Период между обновлениями в секундах
-    //     float stepDuration = speed;
-    //     float currentTime = Time.time;
+    private void MoveLeft(float speed)
+    {
+        // Период между обновлениями в секундах
+        float stepDuration = speed;
+        float currentTime = Time.time;
 
-    //     // Проверяем, прошло ли достаточно времени для следующего этапа
-    //     if (currentTime - lastUpdateLeftTime >= stepDuration)
-    //     {
-    //         lastUpdateLeftTime = currentTime;
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateLeftTime >= stepDuration)
+        {
+            lastUpdateLeftTime = currentTime;
 
-    //         // Обновляем текущий этап (циклическое переключение между 0 и 1)
-    //         currentLeftStep = (currentLeftStep + 1) % 7;
-    //         // ang += 15f;
-    //         // if (ang >= 60) {
-    //         //     ang = 0f;
-    //         // }
-    //     }
+            // Обновляем текущий этап (циклическое переключение между 0 и 1)
+            currentLeftStep = (currentLeftStep + 1) % 7;
+            // ang += 15f;
+            // if (ang >= 60) {
+            //     ang = 0f;
+            // }
+        }
 
-    //     //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
-    //     //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+        //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
-    //     if (currentTime < 7) {
-    //         // Настройка движений в зависимости от этапа
-    //         if (currentLeftStep == 0)
-    //         {
-    //             // Движение первой группы лап
-    //             ApplySinMovement1(new[] { 5, 6 });
-    //         }
-    //         else if (currentLeftStep == 1)
-    //         {
-    //             // Движение второй группы лап
-    //             MoveLeg(legs[1], ang);
-    //             MoveLeg(legs[2], -ang);
-    //         }
-    //         else if (currentLeftStep == 2)
-    //         {
-    //             // Движение второй группы лап
-    //             MoveLeg(legs[5], 15);
-    //             MoveLeg(legs[6], 15);
-    //         }
-    //         else if (currentLeftStep == 3)
-    //         {
-    //             // Движение второй группы лап
-    //             ApplySinMovement1(new[] { 4, 7 });
-    //         }
-    //         else if (currentLeftStep == 4)
-    //         {
-    //             // Движение первой группы лап
-    //             MoveLeg(legs[1], -ang);
-    //             MoveLeg(legs[2], ang);
-    //         }
-    //         else if (currentLeftStep == 5)
-    //         {
-    //             // Движение второй группы лап
-    //             MoveLeg(legs[5], 15);
-    //             MoveLeg(legs[6], 15);
-    //         }
-    //         else if (currentLeftStep == 6)
-    //         {
-    //             // Движение второй группы лап
-    //             MoveLeg(legs[1], 0);
-    //             MoveLeg(legs[0], 0);
-    //             MoveLeg(legs[2], 0);
-    //             MoveLeg(legs[3], 0);
-    //         }
-    //         else if (currentLeftStep == 7)
-    //         {
-    //             // Движение второй группы лап
-    //             ApplySinMovement4(new[] { 9, 10 });
-    //         }
-    //     }
-    // }
+        if (currentTime < 7) {
+            // Настройка движений в зависимости от этапа
+            if (currentLeftStep == 0)
+            {
+                // Движение первой группы лап
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentLeftStep == 1)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[0], ang);
+                MoveLeg(legs[3], -ang);
+            }
+            else if (currentLeftStep == 2)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[4], 15);
+                MoveLeg(legs[7], 15);
+            }
+            else if (currentLeftStep == 3)
+            {
+                // Движение второй группы лап
+                ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentLeftStep == 4)
+            {
+                // Движение первой группы лап
+                MoveLeg(legs[1], -ang);
+                MoveLeg(legs[3], -ang);
+            }
+            else if (currentLeftStep == 5)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[5], 15);
+                MoveLeg(legs[6], 15);
+            }
+            else if (currentLeftStep == 6)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[1], 0);
+                MoveLeg(legs[0], 0);
+                MoveLeg(legs[2], 0);
+                MoveLeg(legs[3], 0);
+            }
+            else if (currentLeftStep == 7)
+            {
+                // Движение второй группы лап
+                ApplySinMovement4(new[] { 9, 10 });
+            }
+        }
+    }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
         //MoveForward(0.001f);
-        MoveRight(1f);
+        MoveRight(0.1f);
 
         // MoveLeg(legs[0], 15);
         // MoveLeg(legs[3], -15);
