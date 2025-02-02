@@ -461,49 +461,49 @@ public class DoggyAgent : Agent
         //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
         //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
-        if (currentTime < 7) {
+        if (true) {
             // Настройка движений в зависимости от этапа
             if (currentLeftStep == 0)
             {
                 // Движение первой группы лап
-                ApplySinMovement1(new[] { 4, 7 });
+                ApplySinMovement1(new[] { 5, 6 });
             }
             else if (currentLeftStep == 1)
             {
                 // Движение второй группы лап
-                MoveLeg(legs[0], ang);
-                MoveLeg(legs[3], -ang);
+                MoveLeg(legs[1], ang);
+                MoveLeg(legs[2], -ang);
             }
             else if (currentLeftStep == 2)
-            {
-                // Движение второй группы лап
-                MoveLeg(legs[4], 15);
-                MoveLeg(legs[7], 15);
-            }
-            else if (currentLeftStep == 3)
-            {
-                // Движение второй группы лап
-                ApplySinMovement1(new[] { 5, 6 });
-            }
-            else if (currentLeftStep == 4)
-            {
-                // Движение первой группы лап
-                MoveLeg(legs[1], -ang);
-                MoveLeg(legs[3], -ang);
-            }
-            else if (currentLeftStep == 5)
             {
                 // Движение второй группы лап
                 MoveLeg(legs[5], 15);
                 MoveLeg(legs[6], 15);
             }
+            else if (currentLeftStep == 3)
+            {
+                // Движение второй группы лап
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentLeftStep == 4)
+            {
+                // Движение первой группы лап
+                MoveLeg(legs[0], -ang);
+                MoveLeg(legs[2], -ang);
+            }
+            else if (currentLeftStep == 5)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[4], 15);
+                MoveLeg(legs[7], 15);
+            }
             else if (currentLeftStep == 6)
             {
                 // Движение второй группы лап
-                MoveLeg(legs[1], 0);
                 MoveLeg(legs[0], 0);
-                MoveLeg(legs[2], 0);
+                MoveLeg(legs[1], 0);
                 MoveLeg(legs[3], 0);
+                MoveLeg(legs[2], 0);
             }
             else if (currentLeftStep == 7)
             {
@@ -518,7 +518,7 @@ public class DoggyAgent : Agent
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
         //MoveForward(0.001f);
-        MoveRight(0.1f);
+        MoveLeft(0.1f);
 
         // MoveLeg(legs[0], 15);
         // MoveLeg(legs[3], -15);
