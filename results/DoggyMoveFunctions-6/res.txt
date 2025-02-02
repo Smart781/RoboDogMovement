@@ -1,0 +1,168 @@
+(venv) C:\ML-Agents\ml-agents-develop\ml-agents-develop\Project>mlagents-learn config/AmyImitation.yaml --run-id=DoggyMoveFunctions-6
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\torch\__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\tensor\python_tensor.cpp:434.)
+  _C._set_default_tensor_type(t)
+
+            ┐  ╖
+        ╓╖╬│╡  ││╬╖╖
+    ╓╖╬│││││┘  ╬│││││╬╖
+ ╖╬│││││╬╜        ╙╬│││││╖╖                               ╗╗╗
+ ╬╬╬╬╖││╦╖        ╖╬││╗╣╣╣╬      ╟╣╣╬    ╟╣╣╣             ╜╜╜  ╟╣╣
+ ╬╬╬╬╬╬╬╬╖│╬╖╖╓╬╪│╓╣╣╣╣╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╒╣╣╖╗╣╣╣╗   ╣╣╣ ╣╣╣╣╣╣ ╟╣╣╖   ╣╣╣
+ ╬╬╬╬┐  ╙╬╬╬╬│╓╣╣╣╝╜  ╫╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╟╣╣╣╙ ╙╣╣╣  ╣╣╣ ╙╟╣╣╜╙  ╫╣╣  ╟╣╣
+ ╬╬╬╬┐     ╙╬╬╣╣      ╫╣╣╣╬      ╟╣╣╬    ╟╣╣╣ ╟╣╣╬   ╣╣╣  ╣╣╣  ╟╣╣     ╣╣╣┌╣╣╜
+ ╬╬╬╜       ╬╬╣╣      ╙╝╣╣╬      ╙╣╣╣╗╖╓╗╣╣╣╜ ╟╣╣╬   ╣╣╣  ╣╣╣  ╟╣╣╦╓    ╣╣╣╣╣
+ ╙   ╓╦╖    ╬╬╣╣   ╓╗╗╖            ╙╝╣╣╣╣╝╜   ╘╝╝╜   ╝╝╝  ╝╝╝   ╙╣╣╣    ╟╣╣╣
+   ╩╬╬╬╬╬╬╦╦╬╬╣╣╗╣╣╣╣╣╣╣╝                                             ╫╣╣╣╣
+      ╙╬╬╬╬╬╬╬╣╣╣╣╣╣╝╜
+          ╙╬╬╬╣╣╣╜
+             ╙
+
+ Version information:
+  ml-agents: 0.30.0,
+  ml-agents-envs: 0.30.0,
+  Communicator API: 1.5.0,
+  PyTorch: 2.5.1+cpu
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\torch\__init__.py:1144: UserWarning: torch.set_default_tensor_type() is deprecated as of PyTorch 2.1, please use torch.set_default_dtype() and torch.set_default_device() as alternatives. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\tensor\python_tensor.cpp:434.)
+  _C._set_default_tensor_type(t)
+[INFO] Listening on port 5004. Start training by pressing the Play button in the Unity Editor.
+[INFO] Connected to Unity environment with package version 3.0.0-exp.1 and communication version 1.5.0
+[INFO] Connected new brain: AmyImitation?team=0
+[INFO] Hyperparameters for behavior name AmyImitation:
+        trainer_type:   ppo
+        hyperparameters:
+          batch_size:   128
+          buffer_size:  2048
+          learning_rate:        0.0003
+          beta: 0.0005
+          epsilon:      0.2
+          lambd:        0.95
+          num_epoch:    3
+          shared_critic:        False
+          learning_rate_schedule:       constant
+          beta_schedule:        constant
+          epsilon_schedule:     constant
+        network_settings:
+          normalize:    True
+          hidden_units: 128
+          num_layers:   2
+          vis_encode_type:      simple
+          memory:       None
+          goal_conditioning_type:       hyper
+          deterministic:        False
+        reward_signals:
+          extrinsic:
+            gamma:      0.99
+            strength:   1.0
+            network_settings:
+              normalize:        False
+              hidden_units:     128
+              num_layers:       2
+              vis_encode_type:  simple
+              memory:   None
+              goal_conditioning_type:   hyper
+              deterministic:    False
+        init_path:      None
+        keep_checkpoints:       100
+        checkpoint_interval:    50000
+        max_steps:      1000000
+        time_horizon:   64
+        summary_freq:   15000
+        threaded:       True
+        self_play:      None
+        behavioral_cloning:
+          demo_path:    Assets/Demonstrations/AmyIm2.demo
+          steps:        1000000
+          strength:     0.5
+          samples_per_update:   0
+          num_epoch:    None
+          batch_size:   None
+C:\Users\123\AppData\Local\Programs\Python\Python39\lib\site-packages\mlagents\trainers\torch_entities\utils.py:289: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\aten\src\ATen\native\TensorShape.cpp:3687.)
+  torch.nn.functional.one_hot(_act.T, action_size[i]).float()
+[INFO] AmyImitation. Step: 15000. Time Elapsed: 215.316 s. Mean Reward: -0.375. Std of Reward: 12.217. Training.
+[INFO] AmyImitation. Step: 30000. Time Elapsed: 410.445 s. Mean Reward: -0.091. Std of Reward: 13.316. Training.
+[INFO] AmyImitation. Step: 45000. Time Elapsed: 604.413 s. Mean Reward: -0.438. Std of Reward: 11.962. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-49982.onnx
+[INFO] AmyImitation. Step: 60000. Time Elapsed: 797.974 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 75000. Time Elapsed: 992.999 s. Mean Reward: 0.706. Std of Reward: 15.968. Training.
+[INFO] AmyImitation. Step: 90000. Time Elapsed: 1187.062 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-99944.onnx
+[INFO] AmyImitation. Step: 105000. Time Elapsed: 1379.165 s. Mean Reward: 0.867. Std of Reward: 16.446. Training.
+[INFO] AmyImitation. Step: 120000. Time Elapsed: 1571.938 s. Mean Reward: 1.225. Std of Reward: 17.461. Training.
+[INFO] AmyImitation. Step: 135000. Time Elapsed: 1766.338 s. Mean Reward: 1.225. Std of Reward: 17.461. Training.
+[INFO] AmyImitation. Step: 150000. Time Elapsed: 1957.872 s. Mean Reward: 2.031. Std of Reward: 19.529. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-149979.onnx
+[INFO] AmyImitation. Step: 165000. Time Elapsed: 2151.888 s. Mean Reward: -0.319. Std of Reward: 12.443. Training.
+[INFO] AmyImitation. Step: 180000. Time Elapsed: 2346.969 s. Mean Reward: -0.091. Std of Reward: 13.316. Training.
+[INFO] AmyImitation. Step: 195000. Time Elapsed: 2541.328 s. Mean Reward: -0.485. Std of Reward: 11.761. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-199997.onnx
+[INFO] AmyImitation. Step: 210000. Time Elapsed: 2737.861 s. Mean Reward: -0.179. Std of Reward: 12.987. Training.
+[INFO] AmyImitation. Step: 225000. Time Elapsed: 2932.678 s. Mean Reward: 0.453. Std of Reward: 15.181. Training.
+[INFO] AmyImitation. Step: 240000. Time Elapsed: 3125.714 s. Mean Reward: 2.535. Std of Reward: 20.701. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-249999.onnx
+[INFO] AmyImitation. Step: 255000. Time Elapsed: 3317.675 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 270000. Time Elapsed: 3510.566 s. Mean Reward: 2.726. Std of Reward: 21.126. Training.
+[INFO] AmyImitation. Step: 285000. Time Elapsed: 3704.339 s. Mean Reward: 1.809. Std of Reward: 18.985. Training.
+[INFO] AmyImitation. Step: 300000. Time Elapsed: 3881.888 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-299936.onnx
+[INFO] AmyImitation. Step: 315000. Time Elapsed: 4052.845 s. Mean Reward: -0.257. Std of Reward: 12.682. Training.
+[INFO] AmyImitation. Step: 330000. Time Elapsed: 4223.702 s. Mean Reward: -1.034. Std of Reward: 9.147. Training.
+[INFO] AmyImitation. Step: 345000. Time Elapsed: 4394.166 s. Mean Reward: 0.419. Std of Reward: 15.069. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-349942.onnx
+[INFO] AmyImitation. Step: 360000. Time Elapsed: 4565.997 s. Mean Reward: 0.728. Std of Reward: 16.034. Training.
+[INFO] AmyImitation. Step: 375000. Time Elapsed: 4737.230 s. Mean Reward: 0.507. Std of Reward: 15.352. Training.
+[INFO] AmyImitation. Step: 390000. Time Elapsed: 4907.733 s. Mean Reward: -0.919. Std of Reward: 9.756. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-399987.onnx
+[INFO] AmyImitation. Step: 405000. Time Elapsed: 5078.872 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 420000. Time Elapsed: 5250.387 s. Mean Reward: 0.196. Std of Reward: 14.331. Training.
+[INFO] AmyImitation. Step: 435000. Time Elapsed: 5422.781 s. Mean Reward: 0.728. Std of Reward: 16.034. Training.
+[INFO] AmyImitation. Step: 450000. Time Elapsed: 5595.157 s. Mean Reward: 1.134. Std of Reward: 17.210. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-449976.onnx
+[INFO] AmyImitation. Step: 465000. Time Elapsed: 5766.031 s. Mean Reward: 0.819. Std of Reward: 16.305. Training.
+[INFO] AmyImitation. Step: 480000. Time Elapsed: 5937.115 s. Mean Reward: -0.910. Std of Reward: 9.801. Training.
+[INFO] AmyImitation. Step: 495000. Time Elapsed: 6109.318 s. Mean Reward: 0.942. Std of Reward: 16.665. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-499973.onnx
+[INFO] AmyImitation. Step: 510000. Time Elapsed: 6280.843 s. Mean Reward: 1.611. Std of Reward: 18.484. Training.
+[INFO] AmyImitation. Step: 525000. Time Elapsed: 6451.695 s. Mean Reward: 0.623. Std of Reward: 15.713. Training.
+[INFO] AmyImitation. Step: 540000. Time Elapsed: 6623.575 s. Mean Reward: -0.619. Std of Reward: 11.180. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-549975.onnx
+[INFO] AmyImitation. Step: 555000. Time Elapsed: 6797.341 s. Mean Reward: -0.919. Std of Reward: 9.756. Training.
+[INFO] AmyImitation. Step: 570000. Time Elapsed: 6967.359 s. Mean Reward: -0.717. Std of Reward: 10.736. Training.
+[INFO] AmyImitation. Step: 585000. Time Elapsed: 7138.745 s. Mean Reward: 0.217. Std of Reward: 14.402. Training.
+[INFO] AmyImitation. Step: 600000. Time Elapsed: 7309.747 s. Mean Reward: 1.496. Std of Reward: 18.187. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-599940.onnx
+[INFO] AmyImitation. Step: 615000. Time Elapsed: 7482.638 s. Mean Reward: 1.194. Std of Reward: 17.376. Training.
+[INFO] AmyImitation. Step: 630000. Time Elapsed: 7657.480 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 645000. Time Elapsed: 7828.558 s. Mean Reward: -0.690. Std of Reward: 10.858. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-649997.onnx
+[INFO] AmyImitation. Step: 660000. Time Elapsed: 8001.391 s. Mean Reward: -1.053. Std of Reward: 9.038. Training.
+[INFO] AmyImitation. Step: 675000. Time Elapsed: 8172.387 s. Mean Reward: 2.213. Std of Reward: 19.961. Training.
+[INFO] AmyImitation. Step: 690000. Time Elapsed: 8343.952 s. Mean Reward: -1.861. Std of Reward: 0.002. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-699951.onnx
+[INFO] AmyImitation. Step: 705000. Time Elapsed: 8515.709 s. Mean Reward: 2.913. Std of Reward: 21.531. Training.
+[INFO] AmyImitation. Step: 720000. Time Elapsed: 8686.675 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 735000. Time Elapsed: 8858.835 s. Mean Reward: 0.196. Std of Reward: 14.331. Training.
+[INFO] AmyImitation. Step: 750000. Time Elapsed: 9029.565 s. Mean Reward: -0.164. Std of Reward: 13.040. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-749989.onnx
+[INFO] AmyImitation. Step: 765000. Time Elapsed: 9204.373 s. Mean Reward: 2.007. Std of Reward: 19.469. Training.
+[INFO] AmyImitation. Step: 780000. Time Elapsed: 9373.285 s. Mean Reward: 1.134. Std of Reward: 17.210. Training.
+[INFO] AmyImitation. Step: 795000. Time Elapsed: 9544.949 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-799993.onnx
+[INFO] AmyImitation. Step: 810000. Time Elapsed: 9716.141 s. Mean Reward: 1.257. Std of Reward: 17.547. Training.
+[INFO] AmyImitation. Step: 825000. Time Elapsed: 9887.577 s. Mean Reward: -0.270. Std of Reward: 12.633. Training.
+[INFO] AmyImitation. Step: 840000. Time Elapsed: 10060.022 s. Mean Reward: -0.294. Std of Reward: 12.537. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-849954.onnx
+[INFO] AmyImitation. Step: 855000. Time Elapsed: 10231.236 s. Mean Reward: 2.325. Std of Reward: 20.221. Training.
+[INFO] AmyImitation. Step: 870000. Time Elapsed: 10402.159 s. Mean Reward: -0.009. Std of Reward: 13.610. Training.
+[INFO] AmyImitation. Step: 885000. Time Elapsed: 10573.340 s. Mean Reward: 4.818. Std of Reward: 25.214. Training.
+[INFO] AmyImitation. Step: 900000. Time Elapsed: 10744.010 s. Mean Reward: -0.075. Std of Reward: 13.373. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-899945.onnx
+[INFO] AmyImitation. Step: 915000. Time Elapsed: 10915.640 s. Mean Reward: -0.042. Std of Reward: 13.490. Training.
+[INFO] AmyImitation. Step: 930000. Time Elapsed: 11085.856 s. Mean Reward: 0.251. Std of Reward: 24.560. Training.
+[INFO] AmyImitation. Step: 945000. Time Elapsed: 11255.952 s. Mean Reward: 1.102. Std of Reward: 16.964. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-949960.onnx
+[INFO] AmyImitation. Step: 960000. Time Elapsed: 11426.005 s. Mean Reward: -0.270. Std of Reward: 12.633. Training.
+[INFO] AmyImitation. Step: 975000. Time Elapsed: 11595.725 s. Mean Reward: -1.862. Std of Reward: 0.002. Training.
+[INFO] AmyImitation. Step: 990000. Time Elapsed: 11767.851 s. Mean Reward: 2.519. Std of Reward: 20.666. Training.
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-999975.onnx
+[INFO] Exported results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-1000039.onnx
+[INFO] Copied results\DoggyMoveFunctions-6\AmyImitation\AmyImitation-1000039.onnx to results\DoggyMoveFunctions-6\AmyImitation.onnx.

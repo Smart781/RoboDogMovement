@@ -27,6 +27,8 @@ public class DoggyAgent : Agent
     [Header("Сенсоры")]
     public Unity.MLAgentsExamples.GroundContact[] groundContacts;
 
+    public GameObject foot;
+
     private float distToTarget = 0f;
 
     //private Oscillator m_Oscillator;
@@ -39,9 +41,13 @@ public class DoggyAgent : Agent
     private int currentLeftStep = 0;
     //private bool change = false;
     private float ang = 10f;
-    private int pred_ind = -1;
-    private float pred_speed = 1f;
-    private bool compl = false; 
+    //private int pred_ind = -1;
+    //private float pred_speed = 1f;
+    //private bool compl = false;
+    private Vector3 endPosition;
+    private float UpFoot = 0.5f;
+    private float DownFoot = 0.5f;
+    private bool flag = false;
 
     public override void Initialize()
     {
@@ -92,6 +98,29 @@ public class DoggyAgent : Agent
         currentRightStep = 0;
         lastUpdateLeftTime = 0f;
         currentLeftStep = 0;
+
+        //FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
+
+        // // Начальная позиция луча
+        // Vector3 startPosition = foot.transform.position;
+
+        // // Направление луча (например, вправо от объекта)
+        // Vector3 direction = foot.transform.right.normalized; // Нормализуем, чтобы длина была 1
+
+        // // Длина луча
+        // float rayLength = 0.05f;
+
+        // // Отрисовка луча
+        // Debug.DrawRay(startPosition, direction * rayLength, Color.black);
+
+        // // Вычисление конечной точки луча
+        // endPosition = startPosition + direction * rayLength;
+
+        // Вывод конечной точки в консоль (для проверки)
+        // Debug.Log("Конечная точка луча: " + endPosition);
+
+        // Вывод конечной точки вертикального луча в консоль (для проверки)
+        // Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
 
 
         // MoveLeg(legs[8], 90);
@@ -149,45 +178,79 @@ public class DoggyAgent : Agent
     {
         var actions = vectorAction.ContinuousActions;
 
-        float val = -1f;
-        int ind = -1;
+        // float val = -1f;
+        // int ind = -1;
 
-        for (int i = 0; i < 3; i++)
-        {
-            float current_action = ((actions[i] * 1f) + 1) / 2;
-            if (current_action >= val) {
-                val = current_action;
-                ind = i;
-            }
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     float current_action = ((actions[i] * 1f) + 1) / 2;
+        //     if (current_action > val) {
+        //         val = current_action;
+        //         ind = i;
+        //     }
+        // }
+
+        // if (compl) {
+        //     Debug.Log(pred_ind);
+        //     bool res = false;
+        //     if (pred_ind == 0) {
+        //         res = MoveForward(0.01f);
+        //         // AddReward(0.01f);
+        //     }
+        //     else if (pred_ind == 1) {
+        //         res = MoveRight(0.1f);
+        //     }
+        //     else {
+        //         res = MoveLeft(0.1f);
+        //     }
+        //     if (res) {
+        //         compl = false;
+        //     }
+        // }
+        // else {
+        //     if (val >= 0.5) {
+        //         //pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
+        //         pred_ind = ind;
+        //         compl = true; 
+        //     }
+        // }
+
+        //Debug.Log(foot.transform.position);
+        // Debug.Log(foot.transform.right);
+        // Debug.Log(foot.transform.position);
+        //Debug.Log(FootPos);
+        Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
+
+        // Отрисовка луча
+        Debug.DrawRay(foot.transform.position, foot.transform.right.normalized * 0.05f, Color.black);
+
+
+        if (!flag) {
+            // Вычисление конечной точки луча
+            endPosition = foot.transform.position + foot.transform.right.normalized * 0.05f;
         }
 
-        if (compl) {
-            bool res = false;
-            if (pred_ind == 0) {
-                res = MoveForward(pred_speed);
-            }
-            else if (pred_ind == 1) {
-                res = MoveRight(pred_speed);
-            }
-            else {
-                res = MoveLeft(pred_speed);
-            }
-            if (res) {
-                compl = false;
-            }
-        }
-        else {
-            if (val >= 0.5) {
-                pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
-                pred_ind = ind;
-                compl = true; 
-            }
-        }
+
+        // Вертикальный луч из конечной точки
+        Vector3 verticalStartPosition = endPosition; // Начальная точка вертикального луча
+
+        // Направление вертикального луча (вверх)
+        Vector3 verticalDirection = Vector3.up; // или Vector3.down для направления вниз
+
+        // Длина вертикального луча
+        float verticalRayLength = 1f;
+
+        // Отрисовка вертикального луча
+        Debug.DrawRay(verticalStartPosition, verticalDirection * verticalRayLength, Color.red);
+
+        // Вычисление конечной точки вертикального луча
+        Vector3 verticalEndPosition = verticalStartPosition + verticalDirection * verticalRayLength;
+
 
         // for (int i = 0; i < 12; i++)
         // {
-        //     // float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
-        //     // MoveLeg(legs[i], angle);
+        //     float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+        //     MoveLeg(legs[i], angle);
         //     // if ((i % 4) != 0 && (i % 4) != 3) {
         //     //     if (i % 4 == 1) {
         //     //         float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
@@ -349,8 +412,8 @@ public class DoggyAgent : Agent
             currentForwardStep = (currentForwardStep + 1) % 8;
         }
 
-        ApplySinMovement_2(new[] { 4, 5, 6, 7 });
-        ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+        // ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        // ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
         // Настройка движений в зависимости от этапа
         if (currentForwardStep == 0)
@@ -562,15 +625,100 @@ public class DoggyAgent : Agent
         }
     }
 
+   private bool MoveSinBackward(float speed)
+    {
+        // Период между обновлениями в секундах
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
+        {
+            lastUpdateForwardTime = currentTime;
+
+            // Обновляем текущий этап (циклическое переключение между 0 и 1)
+            currentForwardStep = (currentForwardStep + 1) % 8;
+        }
+
+        // Синусоидальные движения для передних и задних ног
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); // Используем синус для плавного движения
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); // Используем косинус для противоположного движения
+
+        // Применяем синусоидальные движения к плечевым суставам
+        MoveLeg(legs[4], sinValue * 30); // Передний левый плечевой сустав
+        MoveLeg(legs[5], -sinValue * 30); // Передний правый плечевой сустав
+        MoveLeg(legs[6], cosValue * 30); // Задний левый плечевой сустав
+        MoveLeg(legs[7], -cosValue * 30); // Задний правый плечевой сустав
+
+        // Применяем синусоидальные движения к коленным суставам
+        MoveLeg(legs[8], sinValue * 45); // Передний левый коленный сустав
+        MoveLeg(legs[9], -sinValue * 45); // Передний правый коленный сустав
+        MoveLeg(legs[10], cosValue * 45); // Задний левый коленный сустав
+        MoveLeg(legs[11], -cosValue * 45); // Задний правый коленный сустав
+
+        // Возвращаем true, если цикл завершен
+        return currentForwardStep == 7;
+    }
+
+    private bool MoveSinForward(float speed)
+    {
+        // Период между обновлениями в секундах
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
+        {
+            lastUpdateForwardTime = currentTime;
+
+            // Обновляем текущий этап (циклическое переключение между 0 и 7)
+            currentForwardStep = (currentForwardStep + 1) % 8;
+        }
+
+        // Синусоидальные движения для передних и задних ног
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); // Используем синус для плавного движения
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); // Используем косинус для противоположного движения
+
+        // Применяем синусоидальные движения к плечевым суставам
+        MoveLeg(legs[4], -sinValue * 60); // Передний левый плечевой сустав (движение вперед)
+        // MoveLeg(legs[5], -cosValue * 90); // Передний правый плечевой сустав (движение вперед)
+        // MoveLeg(legs[6], -cosValue * 90); // Задний левый плечевой сустав (движение вперед)
+        // MoveLeg(legs[7], -sinValue * 90); // Задний правый плечевой сустав (движение вперед)
+
+        // Применяем синусоидальные движения к коленным суставам
+        MoveLeg(legs[8], sinValue * 45); // Передний левый коленный сустав (движение вперед)
+        // MoveLeg(legs[9], cosValue * 30); // Передний правый коленный сустав (движение вперед)
+        // MoveLeg(legs[10], cosValue * 30); // Задний левый коленный сустав (движение вперед)
+        // MoveLeg(legs[11], sinValue * 30); // Задний правый коленный сустав (движение вперед)
+
+        // Возвращаем true, если цикл завершен
+        return currentForwardStep == 7;
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
-        //MoveForward(0.001f);
+        //MoveForward(0.01f);
         //MoveLeft(0.1f);
+        //MoveSinForward(0.1f);
 
         // MoveLeg(legs[0], 15);
         // MoveLeg(legs[3], -15);
+        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
+        Debug.Log(Math.Abs(dist - 0.025));
+        if (Math.Abs(dist - 0.025) < 1e-8) {
+            UpFoot -= 0.1f;
+            MoveLeg(legs[5], UpFoot);
+        }
+        else if (dist < 0.025) {
+            DownFoot += 0.1f;
+            MoveLeg(legs[9], DownFoot);
+        }
+        else {
+            DownFoot -= 0.1f;
+            MoveLeg(legs[9], DownFoot);
+        }
 
         // if (change) {
         //     Debug.Log("YES");
@@ -580,31 +728,49 @@ public class DoggyAgent : Agent
         //     //change = false;
         // }
 
-        // ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
-        // ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
-        // ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+        // ApplySinMovement_1(new[] { 0, 1, 2, 3 });
+        // ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        // ApplySinMovement_3(new[] { 8, 10 });
+
+        // for (int i = 0; i < 12; i++)
+        // {
+        //     //float angle = 0f;
+        //     if (i < 4) {
+        //         //angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (Mathf.Sin(Mathf.PI / 12) + 1) * 0.5f);
+        //         continuousActions[i] = Mathf.Sin(Mathf.PI / 8);
+        //     }
+        //     else if (i < 8) {
+        //         continuousActions[i] = 0.5f;
+        //     }
+        //     else {
+        //         continuousActions[i] = 0.5f;
+        //     }
+        // }
         // MoveLeg(legs[11], 90);
         //MoveLeg(legs[8], 90);
         // MoveLeg(legs[11], 90);
 
-        continuousActions[8] = Input.GetAxisRaw("Horizontal");
-        continuousActions[11] = Input.GetAxisRaw("Vertical");
+        // continuousActions[8] = 1;
+        // continuousActions[11] = 1;
+
+        // continuousActions[9] = Input.GetAxisRaw("Horizontal");
+        // continuousActions[11] = Input.GetAxisRaw("Vertical");
     }
     
     public void FixedUpdate()
     {
-        body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
-        for (int i = 0; i < 12; i++)
-        {
-           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
-        }
+        // body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
+        // for (int i = 0; i < 12; i++)
+        // {
+        //    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+        // }
 
         RaycastHit hit;
         if (Physics.Raycast(body.transform.position, body.transform.right, out hit))
         {
             if (hit.collider.gameObject == cube)
             {
-                //AddReward(1f);
+                AddReward(0.1f);
                 // body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
                 // for (int i = 0; i < 12; i++)
                 // {

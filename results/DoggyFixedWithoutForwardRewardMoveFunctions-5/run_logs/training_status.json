@@ -1,0 +1,389 @@
+{
+    "AmyImitation": {
+        "checkpoints": [
+            {
+                "steps": 49876,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-49876.onnx",
+                "reward": -1.311250016093254,
+                "creation_time": 1737845428.0350885,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-49876.pt"
+                ]
+            },
+            {
+                "steps": 99996,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-99996.onnx",
+                "reward": 5.937999784946442,
+                "creation_time": 1737846024.1850176,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-99996.pt"
+                ]
+            },
+            {
+                "steps": 149872,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-149872.onnx",
+                "reward": 7.73900032043457,
+                "creation_time": 1737846620.4632668,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-149872.pt"
+                ]
+            },
+            {
+                "steps": 199964,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-199964.onnx",
+                "reward": -1.8416000127792358,
+                "creation_time": 1737847206.2852845,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-199964.pt"
+                ]
+            },
+            {
+                "steps": 249936,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-249936.onnx",
+                "reward": 1.6656668052698176,
+                "creation_time": 1737847785.15815,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-249936.pt"
+                ]
+            },
+            {
+                "steps": 299930,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-299930.onnx",
+                "reward": 0.3059999744097392,
+                "creation_time": 1737848386.2244372,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-299930.pt"
+                ]
+            },
+            {
+                "steps": 349900,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-349900.onnx",
+                "reward": -1.8600000143051147,
+                "creation_time": 1737849096.0749485,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-349900.pt"
+                ]
+            },
+            {
+                "steps": 399974,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-399974.onnx",
+                "reward": 2.0675713334764754,
+                "creation_time": 1737849730.3181064,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-399974.pt"
+                ]
+            },
+            {
+                "steps": 449889,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-449889.onnx",
+                "reward": 0.9378331899642944,
+                "creation_time": 1737850306.3034225,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-449889.pt"
+                ]
+            },
+            {
+                "steps": 499999,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-499999.onnx",
+                "reward": 14.389248818159103,
+                "creation_time": 1737850886.2461302,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-499999.pt"
+                ]
+            },
+            {
+                "steps": 549977,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-549977.onnx",
+                "reward": -1.244799974001944,
+                "creation_time": 1737851474.3669136,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-549977.pt"
+                ]
+            },
+            {
+                "steps": 599952,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-599952.onnx",
+                "reward": 9.837999887298793,
+                "creation_time": 1737852182.3213499,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-599952.pt"
+                ]
+            },
+            {
+                "steps": 649978,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-649978.onnx",
+                "reward": 38.20299926283769,
+                "creation_time": 1737852789.8927953,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-649978.pt"
+                ]
+            },
+            {
+                "steps": 699962,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-699962.onnx",
+                "reward": 10.145666652255589,
+                "creation_time": 1737853366.6142623,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-699962.pt"
+                ]
+            },
+            {
+                "steps": 749889,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-749889.onnx",
+                "reward": -1.095333352465079,
+                "creation_time": 1737853943.406685,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-749889.pt"
+                ]
+            },
+            {
+                "steps": 799874,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-799874.onnx",
+                "reward": 0.5709999899069468,
+                "creation_time": 1737854520.3524191,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-799874.pt"
+                ]
+            },
+            {
+                "steps": 849992,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-849992.onnx",
+                "reward": -1.4770000138669275,
+                "creation_time": 1737855101.5241594,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-849992.pt"
+                ]
+            },
+            {
+                "steps": 899886,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-899886.onnx",
+                "reward": 16.98200001103881,
+                "creation_time": 1737855678.2132716,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-899886.pt"
+                ]
+            },
+            {
+                "steps": 949992,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-949992.onnx",
+                "reward": -0.2821999575709924,
+                "creation_time": 1737856256.2712233,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-949992.pt"
+                ]
+            },
+            {
+                "steps": 999926,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-999926.onnx",
+                "reward": 18.045428906168258,
+                "creation_time": 1737856831.855682,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-999926.pt"
+                ]
+            },
+            {
+                "steps": 1049967,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1049967.onnx",
+                "reward": -0.6621251106262207,
+                "creation_time": 1737857409.3447587,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1049967.pt"
+                ]
+            },
+            {
+                "steps": 1099906,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1099906.onnx",
+                "reward": 18.136333286762238,
+                "creation_time": 1737857984.6958776,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1099906.pt"
+                ]
+            },
+            {
+                "steps": 1149996,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1149996.onnx",
+                "reward": -1.3122499844272777,
+                "creation_time": 1737858576.950073,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1149996.pt"
+                ]
+            },
+            {
+                "steps": 1199920,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1199920.onnx",
+                "reward": 27.764665977408487,
+                "creation_time": 1737859282.408832,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1199920.pt"
+                ]
+            },
+            {
+                "steps": 1249994,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1249994.onnx",
+                "reward": 0.18762498447904363,
+                "creation_time": 1737859877.331046,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1249994.pt"
+                ]
+            },
+            {
+                "steps": 1299903,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1299903.onnx",
+                "reward": 0.7645715157102261,
+                "creation_time": 1737860451.1492627,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1299903.pt"
+                ]
+            },
+            {
+                "steps": 1349920,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1349920.onnx",
+                "reward": -1.71000001790129,
+                "creation_time": 1737861026.9062212,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1349920.pt"
+                ]
+            },
+            {
+                "steps": 1399997,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1399997.onnx",
+                "reward": -1.819272751359015,
+                "creation_time": 1737861602.1628706,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1399997.pt"
+                ]
+            },
+            {
+                "steps": 1449921,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1449921.onnx",
+                "reward": 5.910999981046189,
+                "creation_time": 1737862179.1128674,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1449921.pt"
+                ]
+            },
+            {
+                "steps": 1499977,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1499977.onnx",
+                "reward": 10.578000342137077,
+                "creation_time": 1737862755.9996781,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1499977.pt"
+                ]
+            },
+            {
+                "steps": 1549948,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1549948.onnx",
+                "reward": 9.61022220126405,
+                "creation_time": 1737863400.2099106,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1549948.pt"
+                ]
+            },
+            {
+                "steps": 1599975,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1599975.onnx",
+                "reward": -1.2262500179203926,
+                "creation_time": 1737864107.1179843,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1599975.pt"
+                ]
+            },
+            {
+                "steps": 1649991,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1649991.onnx",
+                "reward": 8.472083329572342,
+                "creation_time": 1737864696.0613365,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1649991.pt"
+                ]
+            },
+            {
+                "steps": 1699915,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1699915.onnx",
+                "reward": 39.24460022157679,
+                "creation_time": 1737865271.1358469,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1699915.pt"
+                ]
+            },
+            {
+                "steps": 1749956,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1749956.onnx",
+                "reward": -1.8661428798056607,
+                "creation_time": 1737865847.129461,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1749956.pt"
+                ]
+            },
+            {
+                "steps": 1799888,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1799888.onnx",
+                "reward": 11.928333299984741,
+                "creation_time": 1737866429.5823479,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1799888.pt"
+                ]
+            },
+            {
+                "steps": 1849926,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1849926.onnx",
+                "reward": -1.4476666793537636,
+                "creation_time": 1737867135.6346684,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1849926.pt"
+                ]
+            },
+            {
+                "steps": 1899890,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1899890.onnx",
+                "reward": 12.522888902160856,
+                "creation_time": 1737867752.7145913,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1899890.pt"
+                ]
+            },
+            {
+                "steps": 1949980,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1949980.onnx",
+                "reward": 38.62460009405622,
+                "creation_time": 1737868328.7075448,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1949980.pt"
+                ]
+            },
+            {
+                "steps": 1999987,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1999987.onnx",
+                "reward": null,
+                "creation_time": 1737868906.9576766,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-1999987.pt"
+                ]
+            },
+            {
+                "steps": 2000237,
+                "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-2000237.onnx",
+                "reward": -1.8630000352859497,
+                "creation_time": 1737868907.1018631,
+                "auxillary_file_paths": [
+                    "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-2000237.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2000237,
+            "file_path": "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation.onnx",
+            "reward": -1.8630000352859497,
+            "creation_time": 1737868907.1018631,
+            "auxillary_file_paths": [
+                "results\\DoggyFixedWithoutForwardRewardMoveFunctions-5\\AmyImitation\\AmyImitation-2000237.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.5.1+cpu"
+    }
+}

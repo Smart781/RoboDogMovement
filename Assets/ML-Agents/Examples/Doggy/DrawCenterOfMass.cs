@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class DrawCenterOfMass : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class DrawCenterOfMass : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //OnDrawGizmos();
         
     }
     void OnDrawGizmos()
@@ -23,11 +25,21 @@ public class DrawCenterOfMass : MonoBehaviour
         {
             ArticulationBody rb = gameObject.GetComponent<ArticulationBody>();
 
-            // Получение глобального положения центра массы
-            Vector3 globalCenterOfMass = transform.TransformPoint(rb.centerOfMass);
+            //Debug.Log(rb.centerOfMass);
 
-            // Луч из центра массы
-            Debug.DrawRay(globalCenterOfMass, Vector3.up, rayColor);
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+            Vector3 globalCenterOfMass = transform.TransformPoint(rb.centerOfMass);
+            Vector3 globalPosition = transform.TransformPoint(rb.transform.position);
+
+            // Debug.Log(globalCenterOfMass);
+
+            Debug.Log(globalPosition);
+
+            // пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+            Debug.DrawRay(globalCenterOfMass, Vector3.up, Color.green);
+        }
+        else {
+            //Debug.Log("NO");
         }
     }
 }
