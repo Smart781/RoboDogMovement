@@ -31,9 +31,14 @@ public class DoggyAgent : Agent
 
     //private Oscillator m_Oscillator;
 
-    private float lastUpdateTime = 0f; // Время последнего обновления
-    private int currentStep = 0; // Текущий этап движений
+    private float lastUpdateForwardTime = 0f;
+    private int currentForwardStep = 0;
+    private float lastUpdateRightTime = 0f;
+    private int currentRightStep = 0;
+    private float lastUpdateLeftTime = 0f;
+    private int currentLeftStep = 0;
     //private bool change = false;
+    private float ang = 10f;
 
     public override void Initialize()
     {
@@ -67,7 +72,7 @@ public class DoggyAgent : Agent
         {
             float angle = 0f;
             if (i < 4) {
-                angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (Mathf.Sin(Mathf.PI / 12) + 1) * 0.5f);
+                //angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (Mathf.Sin(Mathf.PI / 12) + 1) * 0.5f);
             }
             else if (i < 8) {
                 angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (0.5f + 1) * 0.5f);
@@ -77,6 +82,14 @@ public class DoggyAgent : Agent
             }
             MoveLeg(legs[i], angle);
         }
+
+        lastUpdateForwardTime = 0f;
+        currentForwardStep = 0;
+        lastUpdateRightTime = 0f;
+        currentRightStep = 0;
+        lastUpdateLeftTime = 0f;
+        currentLeftStep = 0;
+
 
         // MoveLeg(legs[8], 90);
         // MoveLeg(legs[11], 90);
@@ -246,9 +259,18 @@ public class DoggyAgent : Agent
         float time = Time.time;
         foreach (var index in indices)
         {
-            float action = 0.3f;
+            float action = 0.1f;
             float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            //Debug.Log(angle);
             MoveLeg(legs[index], angle);
+            // if (time < 4) {
+            //     Debug.Log("YEST");
+            //     MoveLeg(legs[index], angle);
+            // }
+            // else {
+            //     Debug.Log("NO");
+            //     MoveLeg(legs[index], 2 * angle);
+            // }
         }
     }
 
@@ -263,6 +285,17 @@ public class DoggyAgent : Agent
         }
     }
 
+    private void ApplySinMovement5(int[] indices)
+    {
+        float time = Time.time;
+        foreach (var index in indices)
+        {
+            float action = 0.8f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
+        }
+    }
+
     private void MoveForward(float speed)
     {
         // Период между обновлениями в секундах
@@ -270,62 +303,225 @@ public class DoggyAgent : Agent
         float currentTime = Time.time;
 
         // Проверяем, прошло ли достаточно времени для следующего этапа
-        if (currentTime - lastUpdateTime >= stepDuration)
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
         {
-            lastUpdateTime = currentTime;
+            lastUpdateForwardTime = currentTime;
 
             // Обновляем текущий этап (циклическое переключение между 0 и 1)
-            currentStep = (currentStep + 1) % 8;
+            currentForwardStep = (currentForwardStep + 1) % 8;
         }
 
-        // Настройка движений в зависимости от этапа
-        if (currentStep == 0)
-        {
-            // Движение первой группы лап
-            ApplySinMovement1(new[] { 4, 7 });
-        }
-        else if (currentStep == 1)
-        {
-            // Движение второй группы лап
-            ApplySinMovement2(new[] { 8, 11 });
-        }
-        else if (currentStep == 2)
-        {
-            // Движение второй группы лап
-            ApplySinMovement3(new[] { 4, 7 });
-        }
-        else if (currentStep == 3)
-        {
-            // Движение второй группы лап
-            ApplySinMovement4(new[] { 8, 11 });
-        }
-        else if (currentStep == 4)
-        {
-            // Движение первой группы лап
-            ApplySinMovement1(new[] { 5, 6 });
-        }
-        else if (currentStep == 5)
-        {
-            // Движение второй группы лап
-            ApplySinMovement2(new[] { 9, 10 });
-        }
-        else if (currentStep == 6)
-        {
-            // Движение второй группы лап
-            ApplySinMovement3(new[] { 5, 6 });
-        }
-        else if (currentStep == 7)
-        {
-            // Движение второй группы лап
-            ApplySinMovement4(new[] { 9, 10 });
+        ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+        if (true) {
+            // Настройка движений в зависимости от этапа
+            if (currentForwardStep == 0)
+            {
+                // Движение первой группы лап
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentForwardStep == 1)
+            {
+                // Движение второй группы лап
+                ApplySinMovement2(new[] { 8, 11 });
+                if (currentTime > 4) {
+                    ApplySinMovement_2(new[] { 5, 6 });
+                }
+            }
+            else if (currentForwardStep == 2)
+            {
+                // Движение второй группы лап
+                ApplySinMovement3(new[] { 4, 7 });
+            }
+            else if (currentForwardStep == 3)
+            {
+                // Движение второй группы лап
+                ApplySinMovement4(new[] { 8, 11 });
+            }
+            else if (currentForwardStep == 4)
+            {
+                // Движение первой группы лап
+                ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentForwardStep == 5)
+            {
+                // Движение второй группы лап
+                ApplySinMovement2(new[] { 9, 10 });
+                if (currentTime > 4) {
+                    ApplySinMovement_2(new[] { 4, 7 });
+                }
+            }
+            else if (currentForwardStep == 6)
+            {
+                // Движение второй группы лап
+                ApplySinMovement3(new[] { 5, 6 });
+            }
+            else if (currentForwardStep == 7)
+            {
+                // Движение второй группы лап
+                ApplySinMovement4(new[] { 9, 10 });
+            }
         }
     } 
+
+    private void MoveRight(float speed)
+    {
+        // Период между обновлениями в секундах
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateRightTime >= stepDuration)
+        {
+            lastUpdateRightTime = currentTime;
+
+            // Обновляем текущий этап (циклическое переключение между 0 и 1)
+            currentRightStep = (currentRightStep + 1) % 7;
+            // ang += 15f;
+            // if (ang >= 60) {
+            //     ang = 0f;
+            // }
+        }
+
+        //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+        if (true) {
+            // Настройка движений в зависимости от этапа
+            if (currentRightStep == 0)
+            {
+                // Движение первой группы лап
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentRightStep == 1)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[0], ang);
+                MoveLeg(legs[3], -ang);
+            }
+            else if (currentRightStep == 2)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[4], 15);
+                MoveLeg(legs[7], 15);
+            }
+            else if (currentRightStep == 3)
+            {
+                // Движение второй группы лап
+                ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 4)
+            {
+                // Движение первой группы лап
+                MoveLeg(legs[1], -ang);
+                MoveLeg(legs[2], ang);
+            }
+            else if (currentRightStep == 5)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[5], 15);
+                MoveLeg(legs[6], 15);
+            }
+            else if (currentRightStep == 6)
+            {
+                // Движение второй группы лап
+                MoveLeg(legs[1], 0);
+                MoveLeg(legs[0], 0);
+                MoveLeg(legs[2], 0);
+                MoveLeg(legs[3], 0);
+            }
+            else if (currentRightStep == 7)
+            {
+                // Движение второй группы лап
+                ApplySinMovement4(new[] { 9, 10 });
+            }
+        }
+    } 
+
+    // private void MoveLeft(float speed)
+    // {
+    //     // Период между обновлениями в секундах
+    //     float stepDuration = speed;
+    //     float currentTime = Time.time;
+
+    //     // Проверяем, прошло ли достаточно времени для следующего этапа
+    //     if (currentTime - lastUpdateLeftTime >= stepDuration)
+    //     {
+    //         lastUpdateLeftTime = currentTime;
+
+    //         // Обновляем текущий этап (циклическое переключение между 0 и 1)
+    //         currentLeftStep = (currentLeftStep + 1) % 7;
+    //         // ang += 15f;
+    //         // if (ang >= 60) {
+    //         //     ang = 0f;
+    //         // }
+    //     }
+
+    //     //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+    //     //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+    //     if (currentTime < 7) {
+    //         // Настройка движений в зависимости от этапа
+    //         if (currentLeftStep == 0)
+    //         {
+    //             // Движение первой группы лап
+    //             ApplySinMovement1(new[] { 5, 6 });
+    //         }
+    //         else if (currentLeftStep == 1)
+    //         {
+    //             // Движение второй группы лап
+    //             MoveLeg(legs[1], ang);
+    //             MoveLeg(legs[2], -ang);
+    //         }
+    //         else if (currentLeftStep == 2)
+    //         {
+    //             // Движение второй группы лап
+    //             MoveLeg(legs[5], 15);
+    //             MoveLeg(legs[6], 15);
+    //         }
+    //         else if (currentLeftStep == 3)
+    //         {
+    //             // Движение второй группы лап
+    //             ApplySinMovement1(new[] { 4, 7 });
+    //         }
+    //         else if (currentLeftStep == 4)
+    //         {
+    //             // Движение первой группы лап
+    //             MoveLeg(legs[1], -ang);
+    //             MoveLeg(legs[2], ang);
+    //         }
+    //         else if (currentLeftStep == 5)
+    //         {
+    //             // Движение второй группы лап
+    //             MoveLeg(legs[5], 15);
+    //             MoveLeg(legs[6], 15);
+    //         }
+    //         else if (currentLeftStep == 6)
+    //         {
+    //             // Движение второй группы лап
+    //             MoveLeg(legs[1], 0);
+    //             MoveLeg(legs[0], 0);
+    //             MoveLeg(legs[2], 0);
+    //             MoveLeg(legs[3], 0);
+    //         }
+    //         else if (currentLeftStep == 7)
+    //         {
+    //             // Движение второй группы лап
+    //             ApplySinMovement4(new[] { 9, 10 });
+    //         }
+    //     }
+    // }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
-        MoveForward(0.05f);
+        //MoveForward(0.001f);
+        MoveRight(1f);
+
+        // MoveLeg(legs[0], 15);
+        // MoveLeg(legs[3], -15);
 
         // if (change) {
         //     Debug.Log("YES");
@@ -348,11 +544,11 @@ public class DoggyAgent : Agent
     
     public void FixedUpdate()
     {
-        body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
-        for (int i = 0; i < 12; i++)
-        {
-           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
-        }
+        // body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
+        // for (int i = 0; i < 12; i++)
+        // {
+        //    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+        // }
 
         RaycastHit hit;
         if (Physics.Raycast(body.transform.position, body.transform.right, out hit))
@@ -360,11 +556,11 @@ public class DoggyAgent : Agent
             if (hit.collider.gameObject == cube)
             {
                 //AddReward(1f);
-                body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
-                for (int i = 0; i < 12; i++)
-                {
-                    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
-                }
+                // body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
+                // for (int i = 0; i < 12; i++)
+                // {
+                //     legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
+                // }
             }
             else
             {
