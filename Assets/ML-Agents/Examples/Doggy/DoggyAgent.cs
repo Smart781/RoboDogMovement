@@ -31,9 +31,6 @@ public class DoggyAgent : Agent
 
     //private Oscillator m_Oscillator;
 
-    //private float lastUpdateTime = 0f; // Время последнего обновления
-    //private int currentStep = 0; // Текущий этап движений
-
     public override void Initialize()
     {
         distToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
@@ -121,150 +118,31 @@ public class DoggyAgent : Agent
 
         float currentDistanceToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
         float distanceReward = distToTarget - currentDistanceToTarget;
-        //AddReward(distanceReward);
+        AddReward(distanceReward);
         distToTarget = currentDistanceToTarget;
 
         if (currentDistanceToTarget < 1f)
         {
-            AddReward(100.0f);
+            AddReward(50.0f);
             EndEpisode();
         }
 
-        if (currentDistanceToTarget > 11f)
+        if (distanceReward < 0)
         {
-            AddReward(-100.0f);
-            EndEpisode();
+            AddReward(-0.01f);
         }
 
-        // if (distanceReward < 0)
-        // {
-        //     AddReward(-0.01f);
-        // }
-
-        // if (body.velocity.magnitude < 0.1f)
-        // {
-        //     AddReward(-0.01f);
-        // }
-    }
-
-    private void ApplySinMovement_1(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
+        if (body.velocity.magnitude < 0.1f)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 12);
+            AddReward(-0.01f);
         }
     }
-
-    private void ApplySinMovement_2(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
-            actions[index] = Mathf.Sin(Mathf.PI / 6);
-        }
-    }
-
-    private void ApplySinMovement_3(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
-            actions[index] = Mathf.Sin(Mathf.PI / 100);
-        }
-    }
-
-    private void ApplySinMovement1(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            actions[index] = Mathf.Sin(Mathf.PI / 6) * (-1);
-        }
-    }
-
-    private void ApplySinMovement2(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            actions[index] = Mathf.Sin(Mathf.PI / 6);
-        }
-    }
-
-    private void ApplySinMovement3(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            actions[index] = Mathf.Sin(Mathf.PI / 3) * (-1);
-        }
-    }
-
-    private void ApplySinMovement4(ActionSegment<float> actions, int[] indices)
-    {
-        float time = Time.time;
-        foreach (var index in indices)
-        {
-            actions[index] = Mathf.Sin(Mathf.PI / 3) * (-1);
-        }
-    }
-
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-
-        // // Период между обновлениями в секундах
-        // const float stepDuration = 1f;
-        //float currentTime = Time.time;
-
-        // // Проверяем, прошло ли достаточно времени для следующего этапа
-        // if (currentTime - lastUpdateTime >= stepDuration)
-        // {
-        //     lastUpdateTime = currentTime;
-
-        //     // Обновляем текущий этап (циклическое переключение между 0 и 1)
-        //     currentStep = (currentStep + 1) % 4;
-        // }
-
-        // // Настройка движений в зависимости от этапа
-        // if (currentStep == 0)
-        // {
-        //     // Движение первой группы лап
-        //     ApplySinMovement1(continuousActions, new[] { 4, 7 });
-        // }
-        // else if (currentStep == 1)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement2(continuousActions, new[] { 8, 11 });
-        // }
-        // else if (currentStep == 2)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement3(continuousActions, new[] { 4, 7 });
-        // }
-        // else if (currentStep == 3)
-        // {
-        //     // Движение второй группы лап
-        //     ApplySinMovement4(continuousActions, new[] { 8, 11 });
-        // }
-
-        ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
-        ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
-        ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
-
-        continuousActions[8] = Input.GetAxisRaw("Horizontal");
-        continuousActions[11] = Input.GetAxisRaw("Vertical");
-    }
-    
     public void FixedUpdate()
     {
         body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
         for (int i = 0; i < 12; i++)
         {
-           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+            legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
         }
 
         RaycastHit hit;
@@ -272,7 +150,7 @@ public class DoggyAgent : Agent
         {
             if (hit.collider.gameObject == cube)
             {
-                //AddReward(1f);
+                AddReward(0.001f);
                 body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
                 for (int i = 0; i < 12; i++)
                 {
@@ -281,7 +159,7 @@ public class DoggyAgent : Agent
             }
             else
             {
-                //AddReward(-0.001f);
+                AddReward(-0.001f);
             }
         }
         Debug.DrawRay(body.transform.position, body.transform.right, Color.white);
