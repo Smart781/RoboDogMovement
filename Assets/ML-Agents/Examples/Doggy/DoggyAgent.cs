@@ -33,7 +33,7 @@ public class DoggyAgent : Agent
 
     private float lastUpdateTime = 0f; // Время последнего обновления
     private int currentStep = 0; // Текущий этап движений
-    private bool change = false;
+    //private bool change = false;
 
     public override void Initialize()
     {
@@ -61,7 +61,22 @@ public class DoggyAgent : Agent
             MoveLeg(legs[i], 0);
         }
 
-        change = true;
+        //change = true;
+        
+        for (int i = 0; i < 12; i++)
+        {
+            float angle = 0f;
+            if (i < 4) {
+                angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (Mathf.Sin(Mathf.PI / 12) + 1) * 0.5f);
+            }
+            else if (i < 8) {
+                angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (0.5f + 1) * 0.5f);
+            }
+            else {
+                angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (0.5f + 1) * 0.5f);
+            }
+            MoveLeg(legs[i], angle);
+        }
 
         // MoveLeg(legs[8], 90);
         // MoveLeg(legs[11], 90);
@@ -120,8 +135,8 @@ public class DoggyAgent : Agent
 
         for (int i = 0; i < 12; i++)
         {
-            float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
-            MoveLeg(legs[i], angle);
+            // float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+            // MoveLeg(legs[i], angle);
             // if ((i % 4) != 0 && (i % 4) != 3) {
             //     if (i % 4 == 1) {
             //         float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
@@ -167,87 +182,91 @@ public class DoggyAgent : Agent
         // }
     }
 
-    private void ApplySinMovement_1(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement_1(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = Mathf.Sin(Mathf.PI / 12);
+            float action = Mathf.Sin(Mathf.PI / 12);;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement_2(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement_2(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
             //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
             //actions[index] = Mathf.Sin(Mathf.PI / 15);
-            actions[index] = 0.5f;
+            float action = 0.5f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement_3(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement_3(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
             //actions[index] = Mathf.Sin(Mathf.PI / 15.12f);
             //actions[index] = -Mathf.Sin(Mathf.PI / 20);
-            actions[index] = 0.5f;
+            float action = 0.5f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement1(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement1(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 1f;
+            float action = 1f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement2(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement2(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 1f;
+            float action = 1f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement3(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement3(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 0.2f;
+            float action = 0.3f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    private void ApplySinMovement4(ActionSegment<float> actions, int[] indices)
+    private void ApplySinMovement4(int[] indices)
     {
         float time = Time.time;
         foreach (var index in indices)
         {
-            actions[index] = 0.5f;
+            float action = 0.5f;
+            float angle = Mathf.Lerp(legs[index].xDrive.lowerLimit, legs[index].xDrive.upperLimit, (action + 1) * 0.5f);
+            MoveLeg(legs[index], angle);
         }
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
+    private void MoveForward(float speed)
     {
-        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-
-        if (change) {
-            Debug.Log("YES");
-            ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
-            ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
-            ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
-            //change = false;
-        }
-
         // Период между обновлениями в секундах
-        const float stepDuration = 0.05f;
+        float stepDuration = speed;
         float currentTime = Time.time;
 
         // Проверяем, прошло ли достаточно времени для следующего этапа
@@ -263,43 +282,58 @@ public class DoggyAgent : Agent
         if (currentStep == 0)
         {
             // Движение первой группы лап
-            ApplySinMovement1(continuousActions, new[] { 4, 7 });
+            ApplySinMovement1(new[] { 4, 7 });
         }
         else if (currentStep == 1)
         {
             // Движение второй группы лап
-            ApplySinMovement2(continuousActions, new[] { 8, 11 });
+            ApplySinMovement2(new[] { 8, 11 });
         }
         else if (currentStep == 2)
         {
             // Движение второй группы лап
-            ApplySinMovement3(continuousActions, new[] { 4, 7 });
+            ApplySinMovement3(new[] { 4, 7 });
         }
         else if (currentStep == 3)
         {
             // Движение второй группы лап
-            ApplySinMovement4(continuousActions, new[] { 8, 11 });
+            ApplySinMovement4(new[] { 8, 11 });
         }
         else if (currentStep == 4)
         {
             // Движение первой группы лап
-            ApplySinMovement1(continuousActions, new[] { 5, 6 });
+            ApplySinMovement1(new[] { 5, 6 });
         }
         else if (currentStep == 5)
         {
             // Движение второй группы лап
-            ApplySinMovement2(continuousActions, new[] { 9, 10 });
+            ApplySinMovement2(new[] { 9, 10 });
         }
         else if (currentStep == 6)
         {
             // Движение второй группы лап
-            ApplySinMovement3(continuousActions, new[] { 5, 6 });
+            ApplySinMovement3(new[] { 5, 6 });
         }
         else if (currentStep == 7)
         {
             // Движение второй группы лап
-            ApplySinMovement4(continuousActions, new[] { 9, 10 });
+            ApplySinMovement4(new[] { 9, 10 });
         }
+    } 
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+
+        MoveForward(0.05f);
+
+        // if (change) {
+        //     Debug.Log("YES");
+        //     ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
+        //     ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
+        //     ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+        //     //change = false;
+        // }
 
         // ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
         // ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
