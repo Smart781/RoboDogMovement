@@ -105,25 +105,18 @@ public class DoggyAgent : Agent
 
         //FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
 
-        // // Начальная позиция луча
         // Vector3 startPosition = foot.transform.position;
 
-        // // Направление луча (например, вправо от объекта)
         // Vector3 direction = foot.transform.right.normalized; // Нормализуем, чтобы длина была 1
 
-        // // Длина луча
         // float rayLength = 0.05f;
 
-        // // Отрисовка луча
         // Debug.DrawRay(startPosition, direction * rayLength, Color.black);
 
-        // // Вычисление конечной точки луча
         // endPosition = startPosition + direction * rayLength;
 
-        // Вывод конечной точки в консоль (для проверки)
         // Debug.Log("Конечная точка луча: " + endPosition);
 
-        // Вывод конечной точки вертикального луча в консоль (для проверки)
         // Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
 
 
@@ -225,12 +218,10 @@ public class DoggyAgent : Agent
         //Debug.Log(FootPos);
         //Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
 
-        // Отрисовка луча
         Debug.DrawRay(foot.transform.position, foot.transform.right.normalized * len, Color.black);
 
 
         if (!flag) {
-            // Вычисление конечной точки луча
             startPosition = foot.transform.position;
             endPosition = foot.transform.position + foot.transform.right.normalized * len;
         }
@@ -238,19 +229,14 @@ public class DoggyAgent : Agent
         Debug.DrawRay(startPosition, Vector3.up * 1f, Color.green);
 
 
-        // Вертикальный луч из конечной точки
-        Vector3 verticalStartPosition = endPosition; // Начальная точка вертикального луча
+        Vector3 verticalStartPosition = endPosition;
 
-        // Направление вертикального луча (вверх)
-        Vector3 verticalDirection = Vector3.up; // или Vector3.down для направления вниз
+        Vector3 verticalDirection = Vector3.up;
 
-        // Длина вертикального луча
         float verticalRayLength = 1f;
 
-        // Отрисовка вертикального луча
         Debug.DrawRay(verticalStartPosition, verticalDirection * verticalRayLength, Color.red);
 
-        // Вычисление конечной точки вертикального луча
         Vector3 verticalEndPosition = verticalStartPosition + verticalDirection * verticalRayLength;
 
 
@@ -406,31 +392,25 @@ public class DoggyAgent : Agent
 
     private bool MoveForward(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateForwardTime >= stepDuration)
         {
             lastUpdateForwardTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 1)
             currentForwardStep = (currentForwardStep + 1) % 8;
         }
 
         // ApplySinMovement_2(new[] { 4, 5, 6, 7 });
         // ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
-        // Настройка движений в зависимости от этапа
         if (currentForwardStep == 0)
         {
-            // Движение первой группы лап
             ApplySinMovement1(new[] { 4, 7 });
         }
         else if (currentForwardStep == 1)
         {
-            // Движение второй группы лап
             ApplySinMovement2(new[] { 8, 11 });
             if (currentTime > 4) {
                 ApplySinMovement_2(new[] { 5, 6 });
@@ -438,22 +418,18 @@ public class DoggyAgent : Agent
         }
         else if (currentForwardStep == 2)
         {
-            // Движение второй группы лап
             ApplySinMovement3(new[] { 4, 7 });
         }
         else if (currentForwardStep == 3)
         {
-            // Движение второй группы лап
             ApplySinMovement4(new[] { 8, 11 });
         }
         else if (currentForwardStep == 4)
         {
-            // Движение первой группы лап
             ApplySinMovement1(new[] { 5, 6 });
         }
         else if (currentForwardStep == 5)
         {
-            // Движение второй группы лап
             ApplySinMovement2(new[] { 9, 10 });
             if (currentTime > 4) {
                 ApplySinMovement_2(new[] { 4, 7 });
@@ -461,12 +437,10 @@ public class DoggyAgent : Agent
         }
         else if (currentForwardStep == 6)
         {
-            // Движение второй группы лап
             ApplySinMovement3(new[] { 5, 6 });
         }
         else if (currentForwardStep == 7)
         {
-            // Движение второй группы лап
             ApplySinMovement4(new[] { 9, 10 });
         }
 
@@ -482,16 +456,13 @@ public class DoggyAgent : Agent
 
     private bool MoveRight(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateRightTime >= stepDuration)
         {
             lastUpdateRightTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 1)
             currentRightStep = (currentRightStep + 1) % 7;
             // ang += 15f;
             // if (ang >= 60) {
@@ -503,44 +474,36 @@ public class DoggyAgent : Agent
         //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
         if (true) {
-            // Настройка движений в зависимости от этапа
             if (currentRightStep == 0)
             {
-                // Движение первой группы лап
                 ApplySinMovement1(new[] { 4, 7 });
             }
             else if (currentRightStep == 1)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[0], ang);
                 MoveLeg(legs[3], -ang);
             }
             else if (currentRightStep == 2)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[4], 15);
                 MoveLeg(legs[7], 15);
             }
             else if (currentRightStep == 3)
             {
-                // Движение второй группы лап
                 ApplySinMovement1(new[] { 5, 6 });
             }
             else if (currentRightStep == 4)
             {
-                // Движение первой группы лап
                 MoveLeg(legs[1], -ang);
                 MoveLeg(legs[3], -ang);
             }
             else if (currentRightStep == 5)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[5], 15);
                 MoveLeg(legs[6], 15);
             }
             else if (currentRightStep == 6)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[1], 0);
                 MoveLeg(legs[0], 0);
                 MoveLeg(legs[2], 0);
@@ -558,16 +521,13 @@ public class DoggyAgent : Agent
 
     private bool MoveLeft(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateLeftTime >= stepDuration)
         {
             lastUpdateLeftTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 1)
             currentLeftStep = (currentLeftStep + 1) % 7;
             // ang += 15f;
             // if (ang >= 60) {
@@ -579,44 +539,36 @@ public class DoggyAgent : Agent
         //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
         if (true) {
-            // Настройка движений в зависимости от этапа
             if (currentLeftStep == 0)
             {
-                // Движение первой группы лап
                 ApplySinMovement1(new[] { 5, 6 });
             }
             else if (currentLeftStep == 1)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[1], ang);
                 MoveLeg(legs[2], -ang);
             }
             else if (currentLeftStep == 2)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[5], 15);
                 MoveLeg(legs[6], 15);
             }
             else if (currentLeftStep == 3)
             {
-                // Движение второй группы лап
                 ApplySinMovement1(new[] { 4, 7 });
             }
             else if (currentLeftStep == 4)
             {
-                // Движение первой группы лап
                 MoveLeg(legs[0], -ang);
                 MoveLeg(legs[2], -ang);
             }
             else if (currentLeftStep == 5)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[4], 15);
                 MoveLeg(legs[7], 15);
             }
             else if (currentLeftStep == 6)
             {
-                // Движение второй группы лап
                 MoveLeg(legs[0], 0);
                 MoveLeg(legs[1], 0);
                 MoveLeg(legs[3], 0);
@@ -634,71 +586,58 @@ public class DoggyAgent : Agent
 
    private bool MoveSinBackward(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateForwardTime >= stepDuration)
         {
             lastUpdateForwardTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 1)
             currentForwardStep = (currentForwardStep + 1) % 8;
         }
 
-        // Синусоидальные движения для передних и задних ног
-        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); // Используем синус для плавного движения
-        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); // Используем косинус для противоположного движения
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4);
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4);
+        
+        MoveLeg(legs[4], sinValue * 30);
+        MoveLeg(legs[5], -sinValue * 30);
+        MoveLeg(legs[6], cosValue * 30); 
+        MoveLeg(legs[7], -cosValue * 30);
 
-        // Применяем синусоидальные движения к плечевым суставам
-        MoveLeg(legs[4], sinValue * 30); // Передний левый плечевой сустав
-        MoveLeg(legs[5], -sinValue * 30); // Передний правый плечевой сустав
-        MoveLeg(legs[6], cosValue * 30); // Задний левый плечевой сустав
-        MoveLeg(legs[7], -cosValue * 30); // Задний правый плечевой сустав
+        
+        MoveLeg(legs[8], sinValue * 45); 
+        MoveLeg(legs[9], -sinValue * 45); 
+        MoveLeg(legs[10], cosValue * 45); 
+        MoveLeg(legs[11], -cosValue * 45); 
 
-        // Применяем синусоидальные движения к коленным суставам
-        MoveLeg(legs[8], sinValue * 45); // Передний левый коленный сустав
-        MoveLeg(legs[9], -sinValue * 45); // Передний правый коленный сустав
-        MoveLeg(legs[10], cosValue * 45); // Задний левый коленный сустав
-        MoveLeg(legs[11], -cosValue * 45); // Задний правый коленный сустав
-
-        // Возвращаем true, если цикл завершен
         return currentForwardStep == 7;
     }
 
     private bool MoveSinForward(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateForwardTime >= stepDuration)
         {
             lastUpdateForwardTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 7)
             currentForwardStep = (currentForwardStep + 1) % 8;
         }
 
-        // Синусоидальные движения для передних и задних ног
-        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); // Используем синус для плавного движения
-        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); // Используем косинус для противоположного движения
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4);
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4);
 
-        // Применяем синусоидальные движения к плечевым суставам
-        MoveLeg(legs[4], -sinValue * 60); // Передний левый плечевой сустав (движение вперед)
-        // MoveLeg(legs[5], -cosValue * 90); // Передний правый плечевой сустав (движение вперед)
-        // MoveLeg(legs[6], -cosValue * 90); // Задний левый плечевой сустав (движение вперед)
-        // MoveLeg(legs[7], -sinValue * 90); // Задний правый плечевой сустав (движение вперед)
+        MoveLeg(legs[4], -sinValue * 60);
+        MoveLeg(legs[5], -cosValue * 90);
+        MoveLeg(legs[6], -cosValue * 90);
+        MoveLeg(legs[7], -sinValue * 90);
 
-        // Применяем синусоидальные движения к коленным суставам
-        MoveLeg(legs[8], sinValue * 45); // Передний левый коленный сустав (движение вперед)
-        // MoveLeg(legs[9], cosValue * 30); // Передний правый коленный сустав (движение вперед)
-        // MoveLeg(legs[10], cosValue * 30); // Задний левый коленный сустав (движение вперед)
-        // MoveLeg(legs[11], sinValue * 30); // Задний правый коленный сустав (движение вперед)
+        MoveLeg(legs[8], sinValue * 45);
+        MoveLeg(legs[9], cosValue * 30);
+        MoveLeg(legs[10], cosValue * 30);
+        MoveLeg(legs[11], sinValue * 30);
 
-        // Возвращаем true, если цикл завершен
         return currentForwardStep == 7;
     }
 
@@ -782,18 +721,15 @@ public class DoggyAgent : Agent
         }
     }
 
-    private bool MoveLeft(float speed)
+    private bool MoveImproveSinForward(float speed)
     {
-        // Период между обновлениями в секундах
         float stepDuration = speed;
         float currentTime = Time.time;
 
-        // Проверяем, прошло ли достаточно времени для следующего этапа
         if (currentTime - lastUpdateLeftTime >= stepDuration)
         {
             lastUpdateLeftTime = currentTime;
 
-            // Обновляем текущий этап (циклическое переключение между 0 и 1)
             currentLeftStep = (currentLeftStep + 1) % 2;
             // ang += 15f;
             // if (ang >= 60) {
@@ -805,7 +741,6 @@ public class DoggyAgent : Agent
         //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
 
         if (true) {
-            // Настройка движений в зависимости от этапа
             if (currentLeftStep == 0)
             {
                 MoveImproveSinForwardLeft(len);
