@@ -50,6 +50,7 @@ public class DoggyAgent : Agent
     private float DownFoot = 0.5f;
     private bool flag = false;
     private float FootFlag1 = -1;
+    private float FootFlag2 = -1;
     private float len = 0.1f;
 
     public override void Initialize()
@@ -701,7 +702,47 @@ public class DoggyAgent : Agent
         return currentForwardStep == 7;
     }
 
-    private void MoveImproveSinForward(float r)
+    private void MoveImproveSinForwardRight(float r)
+    {
+        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
+        float cur_dist = (foot.transform.position.x - startPosition.x) * (foot.transform.position.x - startPosition.x) + (foot.transform.position.y - startPosition.y) * (foot.transform.position.y - startPosition.y) + (foot.transform.position.z - startPosition.z) * (foot.transform.position.z - startPosition.z);
+        Debug.Log(Math.Abs(cur_dist - 4 * r * r));
+        //Debug.Log(Math.Abs(dist - r * r));
+        
+        if (Math.Abs(dist - r * r) < 1e-8) {
+            if (Math.Abs(cur_dist - 4 * r * r) < 1e-6) {
+                Debug.Log("YES");
+            }
+            else {
+                FootFlag2 = 1;
+                UpFoot -= 0.1f;
+                MoveLeg(legs[4], UpFoot);
+                MoveLeg(legs[7], UpFoot);
+            }
+        }
+        else if (dist < r * r) {
+            FootFlag2 = 2;
+            DownFoot += 0.1f;
+            MoveLeg(legs[8], DownFoot);
+            MoveLeg(legs[11], DownFoot);
+        }
+        else {
+            if (FootFlag2 == 2) {
+                FootFlag2 = 1;
+                UpFoot -= 0.1f;
+                MoveLeg(legs[4], UpFoot);
+                MoveLeg(legs[7], UpFoot);
+            }
+            else {
+                FootFlag2 = 3;
+                DownFoot -= 0.1f;
+                MoveLeg(legs[8], DownFoot);
+                MoveLeg(legs[11], DownFoot);
+            }
+        }
+    }
+
+    private void MoveImproveSinForwardLeft(float r)
     {
         float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
         float cur_dist = (foot.transform.position.x - startPosition.x) * (foot.transform.position.x - startPosition.x) + (foot.transform.position.y - startPosition.y) * (foot.transform.position.y - startPosition.y) + (foot.transform.position.z - startPosition.z) * (foot.transform.position.z - startPosition.z);
@@ -738,6 +779,48 @@ public class DoggyAgent : Agent
                 MoveLeg(legs[9], DownFoot);
                 MoveLeg(legs[10], DownFoot);
             }
+        }
+    }
+
+    private bool MoveLeft(float speed)
+    {
+        // Период между обновлениями в секундах
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        // Проверяем, прошло ли достаточно времени для следующего этапа
+        if (currentTime - lastUpdateLeftTime >= stepDuration)
+        {
+            lastUpdateLeftTime = currentTime;
+
+            // Обновляем текущий этап (циклическое переключение между 0 и 1)
+            currentLeftStep = (currentLeftStep + 1) % 2;
+            // ang += 15f;
+            // if (ang >= 60) {
+            //     ang = 0f;
+            // }
+        }
+
+        //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+        if (true) {
+            // Настройка движений в зависимости от этапа
+            if (currentLeftStep == 0)
+            {
+                MoveImproveSinForwardLeft(len);
+            }
+            else if (currentLeftStep == 1)
+            {
+                MoveImproveSinForwardRight(len);
+            }
+        }
+            
+        if (currentLeftStep == 1) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
