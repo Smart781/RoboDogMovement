@@ -45,9 +45,12 @@ public class DoggyAgent : Agent
     //private float pred_speed = 1f;
     //private bool compl = false;
     private Vector3 endPosition;
+    private Vector3 startPosition;
     private float UpFoot = 0.5f;
     private float DownFoot = 0.5f;
     private bool flag = false;
+    private float FootFlag1 = -1;
+    private float len = 0.1f;
 
     public override void Initialize()
     {
@@ -219,16 +222,19 @@ public class DoggyAgent : Agent
         // Debug.Log(foot.transform.right);
         // Debug.Log(foot.transform.position);
         //Debug.Log(FootPos);
-        Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
+        //Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
 
         // Отрисовка луча
-        Debug.DrawRay(foot.transform.position, foot.transform.right.normalized * 0.05f, Color.black);
+        Debug.DrawRay(foot.transform.position, foot.transform.right.normalized * len, Color.black);
 
 
         if (!flag) {
             // Вычисление конечной точки луча
-            endPosition = foot.transform.position + foot.transform.right.normalized * 0.05f;
+            startPosition = foot.transform.position;
+            endPosition = foot.transform.position + foot.transform.right.normalized * len;
         }
+
+        Debug.DrawRay(startPosition, Vector3.up * 1f, Color.green);
 
 
         // Вертикальный луч из конечной точки
@@ -695,9 +701,51 @@ public class DoggyAgent : Agent
         return currentForwardStep == 7;
     }
 
+    private void MoveImproveSinForward(float r)
+    {
+        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
+        float cur_dist = (foot.transform.position.x - startPosition.x) * (foot.transform.position.x - startPosition.x) + (foot.transform.position.y - startPosition.y) * (foot.transform.position.y - startPosition.y) + (foot.transform.position.z - startPosition.z) * (foot.transform.position.z - startPosition.z);
+        Debug.Log(Math.Abs(cur_dist - 4 * r * r));
+        //Debug.Log(Math.Abs(dist - r * r));
+        
+        if (Math.Abs(dist - r * r) < 1e-8) {
+            if (Math.Abs(cur_dist - 4 * r * r) < 1e-6) {
+                Debug.Log("YES");
+            }
+            else {
+                FootFlag1 = 1;
+                UpFoot -= 0.1f;
+                MoveLeg(legs[5], UpFoot);
+                MoveLeg(legs[6], UpFoot);
+            }
+        }
+        else if (dist < r * r) {
+            FootFlag1 = 2;
+            DownFoot += 0.1f;
+            MoveLeg(legs[9], DownFoot);
+            MoveLeg(legs[10], DownFoot);
+        }
+        else {
+            if (FootFlag1 == 2) {
+                FootFlag1 = 1;
+                UpFoot -= 0.1f;
+                MoveLeg(legs[5], UpFoot);
+                MoveLeg(legs[6], UpFoot);
+            }
+            else {
+                FootFlag1 = 3;
+                DownFoot -= 0.1f;
+                MoveLeg(legs[9], DownFoot);
+                MoveLeg(legs[10], DownFoot);
+            }
+        }
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+
+        MoveImproveSinForward(len);
 
         //MoveForward(0.01f);
         //MoveLeft(0.1f);
@@ -705,20 +753,7 @@ public class DoggyAgent : Agent
 
         // MoveLeg(legs[0], 15);
         // MoveLeg(legs[3], -15);
-        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
-        Debug.Log(Math.Abs(dist - 0.025));
-        if (Math.Abs(dist - 0.025) < 1e-8) {
-            UpFoot -= 0.1f;
-            MoveLeg(legs[5], UpFoot);
-        }
-        else if (dist < 0.025) {
-            DownFoot += 0.1f;
-            MoveLeg(legs[9], DownFoot);
-        }
-        else {
-            DownFoot -= 0.1f;
-            MoveLeg(legs[9], DownFoot);
-        }
+        
 
         // if (change) {
         //     Debug.Log("YES");
