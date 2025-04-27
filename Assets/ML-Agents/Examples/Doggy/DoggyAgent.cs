@@ -29,6 +29,12 @@ public class DoggyAgent : Agent
 
     public GameObject foot;
 
+    public GameObject footLF;
+    public GameObject footRF;
+    public GameObject footLB;
+    public GameObject footRB;
+
+
     private float distToTarget = 0f;
 
     //private Oscillator m_Oscillator;
@@ -39,39 +45,47 @@ public class DoggyAgent : Agent
     private int currentRightStep = 0;
     private float lastUpdateLeftTime = 0f;
     private int currentLeftStep = 0;
+    float dfoot = 0.0f;
+    float ufoot = 0.0f;
     //private bool change = false;
     private float ang = 10f;
-    //private int pred_ind = -1;
+    // private int pred_ind = -1;
     //private float pred_speed = 1f;
-    //private bool compl = false;
-    private Vector3 endPosition;
-    private Vector3 startPosition;
-    private float UpFoot = 0.5f;
-    private float DownFoot = 0.5f;
-    private bool flag = false;
+    // private bool compl = false;
+    // float func_time = 0.0f;
+    private Vector3[] startPosition = new Vector3[4];
+    private Vector3[] endPosition = new Vector3[4];
+    Vector4 UpFoot = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+    Vector4 DownFoot = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+    Vector4 results = new Vector4(0, 0, 0, 0);
+    Vector4 change_results = new Vector4(0, 0, 0, 0);
+    float[] prev_actions = new float[12];
+    // private bool flag = false;
+
     private float FootFlag1 = -1;
-    private float FootFlag2 = -1;
-    private float len = 0.1f;
+    private float len = 0.02f;
 
     [Header("Параметры походки")]
     public float gaitFrequency = 1f;
     public float legSwingAngle = 30f;
-    public float legLiftAngle = 15f; 
+    public float legLiftAngle = 15f;
     private float gaitPhase = 0f;
 
     [Header("Speed Control")]
-    public float maxSpeed = 5f; 
-    public float minFrequency = 0.8f; 
-    public float maxFrequency = 3f;  
-    public float minSwingAngle = 25f; 
-    public float maxSwingAngle = 50f; 
-    public float minLiftAngle = 10f;  
-    public float maxLiftAngle = 25f;  
-    public float pushForceMultiplier = 3f; 
+    public float maxSpeed = 5f;
+    public float minFrequency = 0.8f;
+    public float maxFrequency = 3f;
+    public float minSwingAngle = 25f;
+    public float maxSwingAngle = 50f;
+    public float minLiftAngle = 10f;
+    public float maxLiftAngle = 25f;
+    public float pushForceMultiplier = 3f;
 
     private Vector3 lastPosition;
     private float currentSpeed;
 
+    private bool button = true;
+    float button_time = 0.0f;
 
     public override void Initialize()
     {
@@ -85,10 +99,10 @@ public class DoggyAgent : Agent
 
     public void ResetDog()
     {
-        Quaternion newRot = Quaternion.Euler(-90, 0, Random.Range(0f, 360f));
+        // Quaternion newRot = Quaternion.Euler(-90, 0, Random.Range(0f, 360f));
 
 
-        body.TeleportRoot(defPos, newRot);
+        // body.TeleportRoot(defPos, newRot);
         //body.TeleportRoot(defPos, defRot); ***
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
@@ -127,11 +141,11 @@ public class DoggyAgent : Agent
 
         // Vector3 startPosition = foot.transform.position;
 
-        // Vector3 direction = foot.transform.right.normalized; // Нормализуем, чтобы длина была 1
+        // Vector3 direction = footLF.transform.right.normalized; // Нормализуем, чтобы длина была 1
 
         // float rayLength = 0.05f;
 
-        // Debug.DrawRay(startPosition, direction * rayLength, Color.black);
+        // Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
 
         // endPosition = startPosition + direction * rayLength;
 
@@ -150,7 +164,7 @@ public class DoggyAgent : Agent
         //m_Oscillator.ManagedReset(); ***
 
         //cube.transform.position = new Vector3(5, 0.21f, Random.Range(-2f, 2f));
-        cube.transform.position = new Vector3(Random.Range(-7.5f, 7.5f), 0.21f, Random.Range(-7.5f, 7.5f));
+        //cube.transform.position = new Vector3(Random.Range(-7.5f, 7.5f), 0.21f, Random.Range(-7.5f, 7.5f));
         //cube.transform.position = new Vector3(5f, 0.21f, 0); ***
 
         //cube.transform.position = new Vector3(8f, 0.26f, 0f);
@@ -163,19 +177,15 @@ public class DoggyAgent : Agent
         sensor.AddObservation(body.angularVelocity);
         sensor.AddObservation(body.transform.right);
 
-        // Позиция куба
         sensor.AddObservation(cube.transform.position);
 
-        // Относительное положение куба
         Vector3 relativePosition = cube.transform.position - body.transform.position;
         sensor.AddObservation(relativePosition);
 
-        // Угловая позиция куба
         Vector3 toCube = (cube.transform.position - body.transform.position).normalized;
         float angleToCube = Vector3.SignedAngle(body.transform.right, toCube, Vector3.up);
         sensor.AddObservation(angleToCube);
 
-        // Расстояние до куба
         float distanceToCube = Vector3.Distance(body.transform.position, cube.transform.position);
         sensor.AddObservation(distanceToCube);
         foreach (var leg in legs)
@@ -195,75 +205,125 @@ public class DoggyAgent : Agent
     {
         var actions = vectorAction.ContinuousActions;
 
-        float val = -1f;
-        int ind = -1;
+        // float val = -1f;
+        // int ind = -1;
+        // // float func_time = 0.0f;
 
-        for (int i = 0; i < 3; i++)
-        {
-            float current_action = ((actions[i] * 1f) + 1) / 2;
-            if (current_action > val) {
-                val = current_action;
-                ind = i;
-            }
-        }
-
-        if (compl) {
-            Debug.Log(pred_ind);
-            bool res = false;
-            if (pred_ind == 0) {
-                res = MoveForward(0.01f);
-                // AddReward(0.01f);
-            }
-            else if (pred_ind == 1) {
-                res = MoveRight(0.1f);
-            }
-            else {
-                res = MoveLeft(0.1f);
-            }
-            if (res) {
-                compl = false;
-            }
-        }
-        else {
-            if (val >= 0.5) {
-                //pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
-                pred_ind = ind;
-                compl = true; 
-            }
-        }
-
-        Debug.Log(foot.transform.position);
-        Debug.Log(foot.transform.right);
-        Debug.Log(foot.transform.position);
-        Debug.Log(FootPos);
-        Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
-
-        Debug.DrawRay(foot.transform.position, foot.transform.right.normalized * len, Color.black);
-
-
-        if (!flag) {
-            startPosition = foot.transform.position;
-            endPosition = foot.transform.position + foot.transform.right.normalized * len;
-        }
-
-        Debug.DrawRay(startPosition, Vector3.up * 1f, Color.green);
-
-
-        Vector3 verticalStartPosition = endPosition;
-
-        Vector3 verticalDirection = Vector3.up;
-
-        float verticalRayLength = 1f;
-
-        Debug.DrawRay(verticalStartPosition, verticalDirection * verticalRayLength, Color.red);
-
-        Vector3 verticalEndPosition = verticalStartPosition + verticalDirection * verticalRayLength;
-
-
-        // for (int i = 0; i < 12; i++)
+        // for (int i = 0; i < 3; i++)
         // {
+        //     float current_action = ((actions[i] * 1f) + 1) / 2;
+        //     if (current_action > val) {
+        //         val = current_action;
+        //         ind = i;
+        //     }
+        // }
+
+        // if (compl) {
+        //     // Debug.Log(pred_ind);
+        //     var articulationBody = body.GetComponent<ArticulationBody>();
+            
+        //     bool res = false;
+        //     if (pred_ind == 0) {
+        //         // res = MoveForward(0.01f);
+        //         // AddReward(0.01f);
+        //         if (articulationBody != null)
+        //         {
+        //             articulationBody.centerOfMass = new Vector3(0.3f, 0, 0);
+        //         }
+        //         F_TROT(func_time, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f);
+        //         if (Time.time - func_time >= 4f) {
+        //             res = true;
+        //         }
+        //     }
+        //     else if (pred_ind == 1) {
+        //         if (articulationBody != null)
+        //         {
+        //             articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
+        //         }
+        //         res = MoveRight(0.1f);
+        //     }
+        //     else {
+        //         if (articulationBody != null)
+        //         {
+        //             articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
+        //         }
+        //         res = MoveLeft(0.1f);
+        //     }
+        //     if (res) {
+        //         compl = false;
+        //     }
+        // }
+        // else {
+        //     if (val >= 0.5) {
+        //         //pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
+        //         for (int i = 0; i < 12; i++) {
+        //             MoveLeg(legs[i], 0);
+        //         }
+        //         pred_ind = ind;
+        //         compl = true;
+        //         func_time = Time.time;
+        //     }
+        // }
+
+        //Debug.Log(foot.transform.position);
+        // Debug.Log(foot.transform.right);
+        // Debug.Log(foot.transform.position);
+        //Debug.Log(FootPos);
+        //Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
+
+        float time = Time.time;
+
+        // if (time > 0.1f) {
+        //     flag = true;
+        // }
+
+        //Debug.Log(time);
+
+        // Debug.DrawRay(footLF.transform.position, footLF.transform.right.normalized * len, Color.black);
+
+
+        // if (!flag) {
+        //     startPosition = foot.transform.position;
+        //     endPosition = foot.transform.position + foot.transform.right.normalized * len;
+        // }
+
+        Debug.DrawRay(startPosition[0], Vector3.up * 1f, Color.green);
+
+
+        // Vector3 verticalStartPosition = endPosition;
+
+        // Vector3 verticalDirection = Vector3.up;
+
+        // float verticalRayLength = 1f;
+
+        Debug.DrawRay(endPosition[0], Vector3.up * 1f, Color.red);
+
+        // Vector3 verticalEndPosition = verticalStartPosition + verticalDirection * verticalRayLength;
+
+        // UpdateSpeedMeasurement();
+
+        // TROT(3f);
+
+
+        // for (int i = 4; i < 12; i++)
+        // {
+        //     if (i % 4 == 2 || i % 4 == 3) {
+        //         continue;
+        //     }
         //     float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
-        //     MoveLeg(legs[i], angle);
+        //     if (prev_actions[i] != actions[i]) {
+        //         if (i % 4 == 0) {
+        //             MoveLeg(legs[i], angle);
+        //             MoveLeg(legs[i + 3], angle);
+        //         }
+        //         else {
+        //             MoveLeg(legs[i], angle);
+        //             MoveLeg(legs[i + 1], angle);
+        //         }
+        //         //Debug.Log(i);
+        //         //MoveLeg(legs[check_ind], angle);
+        //     }
+        //     prev_actions[i] = actions[i];
         //     // if ((i % 4) != 0 && (i % 4) != 3) {
         //     //     if (i % 4 == 1) {
         //     //         float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
@@ -283,7 +343,7 @@ public class DoggyAgent : Agent
 
         float currentDistanceToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
         float distanceReward = distToTarget - currentDistanceToTarget;
-        //AddReward(distanceReward);
+        AddReward(distanceReward);
         distToTarget = currentDistanceToTarget;
 
         if (currentDistanceToTarget < 1f)
@@ -298,14 +358,105 @@ public class DoggyAgent : Agent
             EndEpisode();
         }
 
-        if (distanceReward < 0)
-        {
-            AddReward(-0.01f);
+        // if (distanceReward < 0)
+        // {
+        //     AddReward(-0.01f);
+        // }
+
+        // if (body.velocity.magnitude < 0.1f)
+        // {
+        //     AddReward(-0.01f);
+        // }
+
+        // if (Time.time > 0.1f) {
+        //     Debug.Log("YES");
+        //     foot.transform.RotateAround(endPosition, Vector3.up, 30 * Time.deltaTime);
+        // }
+
+        // if ((Math.Abs(0.17 - body.transform.position.y) >= 0.025f) || !button) {
+        //     position();
+        // }
+    }
+
+    private void position() {
+        // Debug.Log("Position");
+        if (button) {
+            MoveLeg(legs[4], 0);
+            MoveLeg(legs[5], 0);
+            MoveLeg(legs[6], 0);
+            MoveLeg(legs[7], 0);
+
+            MoveLeg(legs[8], 90);
+            MoveLeg(legs[9], 90);
+            MoveLeg(legs[10], 90);
+            MoveLeg(legs[11], 90);
+
+            button = false;
+            button_time = Time.time;
         }
 
-        if (body.velocity.magnitude < 0.1f)
-        {
-            AddReward(-0.01f);
+        else if (Time.time - button_time >= 2.0f) {
+            float angle = 90 * (1 - (Time.time - button_time - 2.0f) / 5);
+            if (angle <= 0) {
+                MoveLeg(legs[8], 0);
+                MoveLeg(legs[9], 0);
+                MoveLeg(legs[10], 0);
+                MoveLeg(legs[11], 0);
+                if (Time.time - button_time >= 8.0f) {
+                    button = true;
+                }
+            }
+            else {
+                MoveLeg(legs[8], angle);
+                MoveLeg(legs[9], angle);
+                MoveLeg(legs[10], angle);
+                MoveLeg(legs[11], angle);
+            }
+        }
+
+    }
+
+    private void change_positionLF()
+    {
+        float time = Time.time;
+
+        if (time > 0.1f) {
+            Debug.Log("YES");
+            startPosition[0] = footLF.transform.position;
+            endPosition[0] = footLF.transform.position + footLF.transform.right.normalized * len;
+        }
+        else{
+            Debug.Log("NO");
+        }
+    }
+
+    private void change_positionRF()
+    {
+        float time = Time.time;
+
+        if (time > 0.1f) {
+            startPosition[1] = footRF.transform.position;
+            endPosition[1] = footRF.transform.position + footRF.transform.right.normalized * len;
+        }
+    }
+
+    private void change_positionLB()
+    {
+        float time = Time.time;
+
+        if (time > 0.1f) {
+            startPosition[2] = footLB.transform.position;
+            endPosition[2] = footLB.transform.position + footLB.transform.right.normalized * len;
+        }
+    }
+
+    private void change_positionRB()
+    {
+        float time = Time.time;
+
+        if (time > 0.1f) {
+            startPosition[3] = footRB.transform.position;
+            endPosition[3] = footRB.transform.position + footRB.transform.right.normalized * len;
         }
     }
 
@@ -532,6 +683,7 @@ public class DoggyAgent : Agent
         }
 
         if (currentRightStep == 6) {
+            Debug.Log("KKK");
             return true;
         }
         else {
@@ -597,11 +749,68 @@ public class DoggyAgent : Agent
         }
 
         if (currentLeftStep == 6) {
+            Debug.Log("QQQ");
             return true;
         }
         else {
             return false;
         }
+    }
+
+   private bool MoveSinBackward(float speed)
+    {
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
+        {
+            lastUpdateForwardTime = currentTime;
+
+            currentForwardStep = (currentForwardStep + 1) % 8;
+        }
+
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); 
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); 
+
+        MoveLeg(legs[4], sinValue * 30); 
+        MoveLeg(legs[5], -sinValue * 30); 
+        MoveLeg(legs[6], cosValue * 30); 
+        MoveLeg(legs[7], -cosValue * 30); 
+
+        MoveLeg(legs[8], sinValue * 45); 
+        MoveLeg(legs[9], -sinValue * 45); 
+        MoveLeg(legs[10], cosValue * 45);
+        MoveLeg(legs[11], -cosValue * 45); 
+
+        return currentForwardStep == 7;
+    }
+
+    private bool MoveSinForward(float speed)
+    {
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
+        {
+            lastUpdateForwardTime = currentTime;
+
+            currentForwardStep = (currentForwardStep + 1) % 8;
+        }
+
+        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4); 
+        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4); 
+
+        MoveLeg(legs[4], -sinValue * 60); 
+        // MoveLeg(legs[5], -cosValue * 90); 
+        // MoveLeg(legs[6], -cosValue * 90); 
+        // MoveLeg(legs[7], -sinValue * 90); 
+
+        MoveLeg(legs[8], sinValue * 45); 
+        // MoveLeg(legs[9], cosValue * 30); 
+        // MoveLeg(legs[10], cosValue * 30); 
+        // MoveLeg(legs[11], sinValue * 30); 
+
+        return currentForwardStep == 7;
     }
 
     private bool MoveSinRight(float speed)
@@ -705,262 +914,6 @@ public class DoggyAgent : Agent
         for (int i = 0; i < legs.Length; i++)
         {
             MoveLeg(legs[i], 0);
-        }
-    }
-
-
-   private bool MoveSinBackward(float speed)
-    {
-        float stepDuration = speed;
-        float currentTime = Time.time;
-
-        if (currentTime - lastUpdateForwardTime >= stepDuration)
-        {
-            lastUpdateForwardTime = currentTime;
-
-            currentForwardStep = (currentForwardStep + 1) % 8;
-        }
-
-        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4);
-        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4);
-        
-        MoveLeg(legs[4], sinValue * 30);
-        MoveLeg(legs[5], -sinValue * 30);
-        MoveLeg(legs[6], cosValue * 30); 
-        MoveLeg(legs[7], -cosValue * 30);
-
-        
-        MoveLeg(legs[8], sinValue * 45); 
-        MoveLeg(legs[9], -sinValue * 45); 
-        MoveLeg(legs[10], cosValue * 45); 
-        MoveLeg(legs[11], -cosValue * 45); 
-
-        return currentForwardStep == 7;
-    }
-
-    private bool MoveSinForward(float speed)
-    {
-        float stepDuration = speed;
-        float currentTime = Time.time;
-
-        if (currentTime - lastUpdateForwardTime >= stepDuration)
-        {
-            lastUpdateForwardTime = currentTime;
-
-            currentForwardStep = (currentForwardStep + 1) % 8;
-        }
-
-        float sinValue = Mathf.Sin(currentForwardStep * Mathf.PI / 4);
-        float cosValue = Mathf.Cos(currentForwardStep * Mathf.PI / 4);
-
-        MoveLeg(legs[4], -sinValue * 60);
-        MoveLeg(legs[5], -cosValue * 90);
-        MoveLeg(legs[6], -cosValue * 90);
-        MoveLeg(legs[7], -sinValue * 90);
-
-        MoveLeg(legs[8], sinValue * 45);
-        MoveLeg(legs[9], cosValue * 30);
-        MoveLeg(legs[10], cosValue * 30);
-        MoveLeg(legs[11], sinValue * 30);
-
-        return currentForwardStep == 7;
-    }
-
-    private void MoveImproveSinForwardRight(float r)
-    {
-        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
-        float cur_dist = (foot.transform.position.x - startPosition.x) * (foot.transform.position.x - startPosition.x) + (foot.transform.position.y - startPosition.y) * (foot.transform.position.y - startPosition.y) + (foot.transform.position.z - startPosition.z) * (foot.transform.position.z - startPosition.z);
-        Debug.Log(Math.Abs(cur_dist - 4 * r * r));
-        //Debug.Log(Math.Abs(dist - r * r));
-        
-        if (Math.Abs(dist - r * r) < 1e-8) {
-            if (Math.Abs(cur_dist - 4 * r * r) < 1e-6) {
-                Debug.Log("YES");
-            }
-            else {
-                FootFlag2 = 1;
-                UpFoot -= 0.1f;
-                MoveLeg(legs[4], UpFoot);
-                MoveLeg(legs[7], UpFoot);
-            }
-        }
-        else if (dist < r * r) {
-            FootFlag2 = 2;
-            DownFoot += 0.1f;
-            MoveLeg(legs[8], DownFoot);
-            MoveLeg(legs[11], DownFoot);
-        }
-        else {
-            if (FootFlag2 == 2) {
-                FootFlag2 = 1;
-                UpFoot -= 0.1f;
-                MoveLeg(legs[4], UpFoot);
-                MoveLeg(legs[7], UpFoot);
-            }
-            else {
-                FootFlag2 = 3;
-                DownFoot -= 0.1f;
-                MoveLeg(legs[8], DownFoot);
-                MoveLeg(legs[11], DownFoot);
-            }
-        }
-    }
-
-    private void MoveImproveSinForwardLeft(float r)
-    {
-        float dist = (foot.transform.position.x - endPosition.x) * (foot.transform.position.x - endPosition.x) + (foot.transform.position.y - endPosition.y) * (foot.transform.position.y - endPosition.y) + (foot.transform.position.z - endPosition.z) * (foot.transform.position.z - endPosition.z);
-        float cur_dist = (foot.transform.position.x - startPosition.x) * (foot.transform.position.x - startPosition.x) + (foot.transform.position.y - startPosition.y) * (foot.transform.position.y - startPosition.y) + (foot.transform.position.z - startPosition.z) * (foot.transform.position.z - startPosition.z);
-        Debug.Log(Math.Abs(cur_dist - 4 * r * r));
-        //Debug.Log(Math.Abs(dist - r * r));
-        
-        if (Math.Abs(dist - r * r) < 1e-8) {
-            if (Math.Abs(cur_dist - 4 * r * r) < 1e-6) {
-                Debug.Log("YES");
-            }
-            else {
-                FootFlag1 = 1;
-                UpFoot -= 0.1f;
-                MoveLeg(legs[5], UpFoot);
-                MoveLeg(legs[6], UpFoot);
-            }
-        }
-        else if (dist < r * r) {
-            FootFlag1 = 2;
-            DownFoot += 0.1f;
-            MoveLeg(legs[9], DownFoot);
-            MoveLeg(legs[10], DownFoot);
-        }
-        else {
-            if (FootFlag1 == 2) {
-                FootFlag1 = 1;
-                UpFoot -= 0.1f;
-                MoveLeg(legs[5], UpFoot);
-                MoveLeg(legs[6], UpFoot);
-            }
-            else {
-                FootFlag1 = 3;
-                DownFoot -= 0.1f;
-                MoveLeg(legs[9], DownFoot);
-                MoveLeg(legs[10], DownFoot);
-            }
-        }
-    }
-
-    private bool MoveImproveSinForward(float speed)
-    {
-        float stepDuration = speed;
-        float currentTime = Time.time;
-
-        if (currentTime - lastUpdateLeftTime >= stepDuration)
-        {
-            lastUpdateLeftTime = currentTime;
-
-            currentLeftStep = (currentLeftStep + 1) % 2;
-            // ang += 15f;
-            // if (ang >= 60) {
-            //     ang = 0f;
-            // }
-        }
-
-        //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
-        //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
-
-        if (true) {
-            if (currentLeftStep == 0)
-            {
-                MoveImproveSinForwardLeft(len);
-            }
-            else if (currentLeftStep == 1)
-            {
-                MoveImproveSinForwardRight(len);
-            }
-        }
-            
-        if (currentLeftStep == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    private void change_positionLF()
-    {
-        float time = Time.time;
-
-        if (time > 0.1f) {
-            Debug.Log("YES");
-            startPosition[0] = footLF.transform.position;
-            endPosition[0] = footLF.transform.position + footLF.transform.right.normalized * len;
-        }
-        else{
-            Debug.Log("NO");
-        }
-    }
-
-    private void change_positionRF()
-    {
-        float time = Time.time;
-
-        if (time > 0.1f) {
-            startPosition[1] = footRF.transform.position;
-            endPosition[1] = footRF.transform.position + footRF.transform.right.normalized * len;
-        }
-    }
-
-    private void change_positionLB()
-    {
-        float time = Time.time;
-
-        if (time > 0.1f) {
-            startPosition[2] = footLB.transform.position;
-            endPosition[2] = footLB.transform.position + footLB.transform.right.normalized * len;
-        }
-    }
-
-    private void change_positionRB()
-    {
-        float time = Time.time;
-
-        if (time > 0.1f) {
-            startPosition[3] = footRB.transform.position;
-            endPosition[3] = footRB.transform.position + footRB.transform.right.normalized * len;
-        }
-    }
-
-
-
-    private void TROT(float targetSpeed)
-    {
-        float speedFactor = Mathf.Clamp01(targetSpeed / maxSpeed);
-        
-        float dynamicFrequency = Mathf.Lerp(minFrequency, maxFrequency, speedFactor);
-        float dynamicSwing = Mathf.Lerp(minSwingAngle, maxSwingAngle, speedFactor);
-        float dynamicLift = Mathf.Lerp(minLiftAngle, maxLiftAngle, speedFactor);
-        
-        gaitPhase += Time.fixedDeltaTime * dynamicFrequency * 2f * Mathf.PI;
-        if (gaitPhase > 2f * Mathf.PI) gaitPhase -= 2f * Mathf.PI;
-
-        float trotPhase1 = Mathf.Sin(gaitPhase);
-        float trotPhase2 = Mathf.Sin(gaitPhase + Mathf.PI);
-
-        MoveLeg(legs[4], trotPhase1 * dynamicSwing); // FL
-        MoveLeg(legs[5], trotPhase2 * dynamicSwing); // FR
-        MoveLeg(legs[6], trotPhase2 * dynamicSwing); // BL
-        MoveLeg(legs[7], trotPhase1 * dynamicSwing); // BR
-
-        float lift1 = Mathf.Max(0, trotPhase1) * dynamicLift;
-        float lift2 = Mathf.Max(0, trotPhase2) * dynamicLift;
-        
-        MoveLeg(legs[8], lift1);  // FL
-        MoveLeg(legs[9], lift2);  // FR
-        MoveLeg(legs[10], lift2); // BL
-        MoveLeg(legs[11], lift1); // BR
-
-        if (trotPhase1 < -0.8f) 
-        {
-            float pushForce = speedFactor * pushForceMultiplier;
-            body.AddForce(body.transform.right * pushForce, ForceMode.Impulse);
         }
     }
 
@@ -1210,6 +1163,41 @@ public class DoggyAgent : Agent
         }
     }
 
+
+    private void TROT(float targetSpeed)
+    {
+        float speedFactor = Mathf.Clamp01(targetSpeed / maxSpeed);
+        
+        float dynamicFrequency = Mathf.Lerp(minFrequency, maxFrequency, speedFactor);
+        float dynamicSwing = Mathf.Lerp(minSwingAngle, maxSwingAngle, speedFactor) * 0.7f;
+        float dynamicLift = Mathf.Lerp(minLiftAngle, maxLiftAngle, speedFactor);
+        
+        gaitPhase += Time.fixedDeltaTime * dynamicFrequency * 2f * Mathf.PI;
+        if (gaitPhase > 2f * Mathf.PI) gaitPhase -= 2f * Mathf.PI;
+
+        float trotPhase1 = Mathf.Sin(gaitPhase);
+        float trotPhase2 = Mathf.Sin(gaitPhase + Mathf.PI);
+
+        MoveLeg(legs[4], trotPhase1 * dynamicSwing);
+        MoveLeg(legs[5], trotPhase2 * dynamicSwing);
+        MoveLeg(legs[6], trotPhase2 * dynamicSwing);
+        MoveLeg(legs[7], trotPhase1 * dynamicSwing);
+
+        float lift1 = Mathf.Max(0, trotPhase1) * dynamicLift;
+        float lift2 = Mathf.Max(0, trotPhase2) * dynamicLift;
+        
+        MoveLeg(legs[8], lift1);
+        MoveLeg(legs[9], lift2);
+        MoveLeg(legs[10], lift2);
+        MoveLeg(legs[11], lift1);
+
+        if (trotPhase1 < -0.8f) 
+        {
+            float pushForce = speedFactor * pushForceMultiplier;
+            body.AddForce(body.transform.right * pushForce, ForceMode.Impulse);
+        }
+    }
+
     void UpdateSpeedMeasurement()
     {
         currentSpeed = (body.transform.position - lastPosition).magnitude / Time.fixedDeltaTime;
@@ -1219,7 +1207,7 @@ public class DoggyAgent : Agent
     private void CPG_TROT(float targetSpeed)
     {
         //const int TROT_GAIT = 1;
-        float[] trotOffset = {0.0f, Mathf.PI, Mathf.PI, 0.0f}; // FL, FR, BL, BR
+        float[] trotOffset = {0.0f, Mathf.PI, Mathf.PI, 0.0f}; 
         //float trotBeta = 0.5f; // 50% времени в опоре
         //float trotTime = 0.5f; // Период цикла (сек)
         //float delta = 1.0f;    // Коэффициент связи
@@ -1245,10 +1233,10 @@ public class DoggyAgent : Agent
             MoveLeg(legs[kneeIndex], lift * maxLiftAngle);
         }
         
-        float pushPhase = gaitPhase + trotOffset[0];
+        float pushPhase = gaitPhase + trotOffset[0]; 
         if (Mathf.Sin(pushPhase) < -0.8f)
         {
-            float pushForce = speedFactor * pushForceMultiplier * 2f;
+            float pushForce = speedFactor * pushForceMultiplier * 2f; 
             body.AddForce(body.transform.right * pushForce, ForceMode.Impulse);
             
             Vector3 torqueStabilization = new Vector3(
@@ -1288,8 +1276,8 @@ public class DoggyAgent : Agent
             float swing = Mathf.Sin(phase) * dynamicSwing; 
             float lift = Mathf.Max(0, Mathf.Sin(phase)) * dynamicLift; 
 
-            int shoulderIndex = 4 + i; 
-            int kneeIndex = 8 + i;    
+            int shoulderIndex = 4 + i;
+            int kneeIndex = 8 + i;     
 
             MoveLeg(legs[shoulderIndex], swing);
             MoveLeg(legs[kneeIndex], lift);
@@ -1302,11 +1290,377 @@ public class DoggyAgent : Agent
         }
     }
 
+    private void Walk() {
+        float period = 0.5f; 
+        int currentCycle = Mathf.FloorToInt(Time.time / period);
+
+        float minValue1 = -50f;
+        float maxValue1 = 30f;
+        float oscillationSpeed1 = 2f;
+        float amplitude1 = (maxValue1 - minValue1) / 2f;
+        float offset1 = (maxValue1 + minValue1) / 2f;
+        float normalizedTime1 = (Time.time % period) / period; 
+        float sinValue1 = Mathf.Sin(normalizedTime1 * 2 * Mathf.PI * oscillationSpeed1); 
+        float currentValue1 = amplitude1 * sinValue1 + offset1;
+
+        float minValue2 = -25f;
+        float maxValue2 = 35f;
+        float oscillationSpeed2 = 1.8f;
+        float amplitude2 = (maxValue2 - minValue2) / 2f;
+        float offset2 = (maxValue2 + minValue2) / 2f;
+        float normalizedTime2 = (Time.time % period) / period; 
+        float sinValue2 = Mathf.Sin(normalizedTime2 * 2 * Mathf.PI * oscillationSpeed2); 
+        float currentValue2 = amplitude2 * sinValue2 + offset2;
+
+        float minValue3 = -10f;
+        float maxValue3 = 10f;
+        float oscillationSpeed3 = 0.9f;
+        float amplitude3 = (maxValue3 - minValue3) / 2f;
+        float offset3 = (maxValue3 + minValue3) / 2f;
+        float normalizedTime3 = (Time.time % period) / period; 
+        float sinValue3 = Mathf.Sin(normalizedTime3 * 2 * Mathf.PI * oscillationSpeed3); 
+        float currentValue3 = amplitude3 * sinValue3 + offset3;
+
+        if (Time.time % period < 0.1f) 
+        {
+            if (currentCycle % 2 == 0) {
+                MoveLeg(legs[4], 0);
+                MoveLeg(legs[7], 0);
+                MoveLeg(legs[8], 0);
+                MoveLeg(legs[11], 0);
+            }
+
+            else {
+                MoveLeg(legs[5], 0);
+                MoveLeg(legs[9], 0);
+                MoveLeg(legs[6], 0);
+                MoveLeg(legs[10], 0);
+            }
+        }
+        else 
+        {
+            if (currentCycle % 2 != 0) {
+                MoveLeg(legs[4], currentValue1);
+                MoveLeg(legs[7], currentValue1);
+                MoveLeg(legs[8], currentValue2);
+                MoveLeg(legs[11], currentValue2);
+            }
+            else {
+                MoveLeg(legs[5], currentValue1);
+                MoveLeg(legs[6], currentValue1);
+                MoveLeg(legs[9], currentValue2);
+                MoveLeg(legs[10], currentValue2);
+            }
+        }
+    }
+
+    private void F_TROT(float start_time, float period, float minValue1, float maxValue1, float oscillationSpeed1, float minValue2, float maxValue2, float oscillationSpeed2) {
+        int currentCycle = Mathf.FloorToInt((Time.time - start_time) / period);
+
+        float amplitude1 = (maxValue1 - minValue1) / 2f;
+        float offset1 = (maxValue1 + minValue1) / 2f;
+        float normalizedTime1 = ((Time.time - start_time) % period) / period;
+        float sinValue1 = Mathf.Sin(normalizedTime1 * 2 * Mathf.PI * oscillationSpeed1); 
+        float currentValue1 = amplitude1 * sinValue1 + offset1;  
+
+        float sinValue11 = Mathf.Sin((normalizedTime1 + 0.25f) * 2 * Mathf.PI * oscillationSpeed1);
+        float currentValue11 = amplitude1 * sinValue11 + offset1;
+
+        float amplitude2 = (maxValue2 - minValue2) / 2f;
+        float offset2 = (maxValue2 + minValue2) / 2f;
+        float normalizedTime2 = ((Time.time - start_time) % period) / period; 
+        float sinValue2 = Mathf.Sin(normalizedTime2 * 2 * Mathf.PI * oscillationSpeed2); 
+        float currentValue2 = amplitude2 * sinValue2 + offset2;
+
+        float sinValue21 = Mathf.Sin((normalizedTime2 + 0.25f) * 2 * Mathf.PI * oscillationSpeed2);
+        float currentValue21 = amplitude2 * sinValue21 + offset2;
+
+        float minValue3 = -10f;
+        float maxValue3 = 80f;
+        float oscillationSpeed3 = 0.9f;
+        float amplitude3 = (maxValue3 - minValue3) / 2f;
+        float offset3 = (maxValue3 + minValue3) / 2f;
+        float normalizedTime3 = ((Time.time - start_time) % period) / period; 
+        float sinValue3 = Mathf.Sin((normalizedTime3 + (period / 2)) * 2 * Mathf.PI * oscillationSpeed3); 
+        float currentValue3 = amplitude3 * sinValue3 + offset3;
+
+        MoveLeg(legs[4], currentValue1);
+        MoveLeg(legs[7], currentValue1);
+        MoveLeg(legs[8], currentValue2);
+        MoveLeg(legs[11], currentValue2);
+
+        MoveLeg(legs[5], currentValue11);
+        MoveLeg(legs[6], currentValue11);
+        MoveLeg(legs[9], currentValue21);
+        MoveLeg(legs[10], currentValue21);
+
+        if (Time.time % period < 0.1f) 
+        {
+            // if (currentCycle % 2 == 0) {
+            //     MoveLeg(legs[4], 0);
+            //     MoveLeg(legs[7], 0);
+            //     MoveLeg(legs[8], 0);
+            //     MoveLeg(legs[11], 0);
+            // }
+
+            // else {
+            //     MoveLeg(legs[5], 0);
+            //     MoveLeg(legs[9], 0);
+            //     MoveLeg(legs[6], 0);
+            //     MoveLeg(legs[10], 0);
+            // }
+        }
+        else 
+        {
+        }
+    }
+
+
+    private void F_Gallop(float period, float minValue1, float maxValue1, float oscillationSpeed1, float minValue2, float maxValue2, float oscillationSpeed2) {
+        int currentCycle = Mathf.FloorToInt(Time.time / period);
+
+        float amplitude1 = (maxValue1 - minValue1) / 2f;
+        float offset1 = (maxValue1 + minValue1) / 2f;
+        float normalizedTime1 = (Time.time % period) / period;
+        float sinValue1 = Mathf.Sin(normalizedTime1 * 2 * Mathf.PI * oscillationSpeed1); 
+        float currentValue1 = amplitude1 * sinValue1 + offset1;  
+
+        float sinValue11 = Mathf.Sin((normalizedTime1 + 0.25f) * 2 * Mathf.PI * oscillationSpeed1);
+        float currentValue11 = amplitude1 * sinValue11 + offset1;
+
+        float amplitude2 = (maxValue2 - minValue2) / 2f;
+        float offset2 = (maxValue2 + minValue2) / 2f;
+        float normalizedTime2 = (Time.time % period) / period; 
+        float sinValue2 = Mathf.Sin(normalizedTime2 * 2 * Mathf.PI * oscillationSpeed2); 
+        float currentValue2 = amplitude2 * sinValue2 + offset2;
+
+        float sinValue21 = Mathf.Sin((normalizedTime2 + 0.25f) * 2 * Mathf.PI * oscillationSpeed2);
+        float currentValue21 = amplitude2 * sinValue21 + offset2;
+
+        float minValue3 = -10f;
+        float maxValue3 = 80f;
+        float oscillationSpeed3 = 0.9f;
+        float amplitude3 = (maxValue3 - minValue3) / 2f;
+        float offset3 = (maxValue3 + minValue3) / 2f;
+        float normalizedTime3 = (Time.time % period) / period; 
+        float sinValue3 = Mathf.Sin((normalizedTime3 + (period / 2)) * 2 * Mathf.PI * oscillationSpeed3); 
+        float currentValue3 = amplitude3 * sinValue3 + offset3;
+
+        MoveLeg(legs[6], currentValue1);
+        MoveLeg(legs[7], currentValue1);
+        MoveLeg(legs[10], currentValue2);
+        MoveLeg(legs[11], currentValue2);
+
+        MoveLeg(legs[4], currentValue11);
+        MoveLeg(legs[5], currentValue11);
+        MoveLeg(legs[8], currentValue21);
+        MoveLeg(legs[9], currentValue21);
+
+        if (Time.time % period < 0.1f) 
+        {
+            // if (currentCycle % 2 == 0) {
+            //     MoveLeg(legs[4], 0);
+            //     MoveLeg(legs[7], 0);
+            //     MoveLeg(legs[8], 0);
+            //     MoveLeg(legs[11], 0);
+            // }
+
+            // else {
+            //     MoveLeg(legs[5], 0);
+            //     MoveLeg(legs[9], 0);
+            //     MoveLeg(legs[6], 0);
+            //     MoveLeg(legs[10], 0);
+            // }
+        }
+        else 
+        {
+        }
+    }
+
+    
+
+
+    private void MoveDistSinForward(float r)
+    {  
+        float dist = distance(foot, 0);
+        float cur_dist = (foot.transform.position.x - startPosition[0].x) * (foot.transform.position.x - startPosition[0].x) + (foot.transform.position.y - startPosition[0].y) * (foot.transform.position.y - startPosition[0].y) + (foot.transform.position.z - startPosition[0].z) * (foot.transform.position.z - startPosition[0].z);
+        // Debug.Log(Math.Abs(0.017 - foot.transform.position.y));
+        //Debug.Log(Math.Abs(cur_dist - 4 * r * r));
+        // flag = true;
+        //Debug.Log(dist - r * r);
+
+        //Debug.Log(startPosition);
+
+        if (Time.time > 0.1f) {
+            if ((Math.Abs(cur_dist - 4 * r * r) < 1e-4) && (Math.Abs(0.017 - foot.transform.position.y) < 2e-3)) {
+                Debug.Log("YES");
+            }
+            else {
+                float m_dist = Math.Abs(dist - r * r);
+                int ind = -1;
+                ufoot -= 1f;
+                MoveLeg(legs[5], ufoot);
+                if (Math.Abs(distance(foot, 0) - r * r) <= m_dist) {
+                    ind = 1;
+                    m_dist = Math.Abs(distance(foot, 0) - r * r);
+                    Debug.Log($"ind: {ind}, m_dist: {m_dist}");
+                    Debug.Log($"position: {foot.transform.position}");
+                }
+                ufoot += 2f;
+                MoveLeg(legs[5], ufoot);
+                if (Math.Abs(distance(foot, 0) - r * r)  <= m_dist) {
+                    ind = 2;
+                    m_dist = Math.Abs(distance(foot, 0) - r * r);
+                    Debug.Log($"ind: {ind}, m_dist: {m_dist}");
+                    Debug.Log($"position: {foot.transform.position}");
+                }
+                ufoot -= 1f;
+                MoveLeg(legs[5], ufoot);
+
+
+                dfoot -= 1f;
+                MoveLeg(legs[9], dfoot);
+                if (Math.Abs(distance(foot, 0) - r * r)  <= m_dist) {
+                    ind = 3;
+                    m_dist = Math.Abs(distance(foot, 0) - r * r);
+                    Debug.Log($"ind: {ind}, m_dist: {m_dist}");
+                    Debug.Log($"position: {foot.transform.position}");
+                }
+                dfoot += 2f;
+                MoveLeg(legs[9], dfoot);
+                if (Math.Abs(distance(foot, 0) - r * r)  <= m_dist) {
+                    ind = 4;
+                    m_dist = Math.Abs(distance(foot, 0) - r * r);
+                    Debug.Log($"ind: {ind}, m_dist: {m_dist}");
+                    // Debug.Log($"position: {foot.transform.position}");
+                }
+                dfoot -= 1f;
+                MoveLeg(legs[9], dfoot);
+
+                if (ind == 1) {
+                    ufoot -= 1f;
+                    MoveLeg(legs[5], ufoot);
+                    Debug.Log($"Final ind: {ind}");
+                    Debug.Log($"UpFoot: {ufoot}, DownFoot: {dfoot}");
+                }
+                else if (ind == 2) {
+                    ufoot += 1f;
+                    MoveLeg(legs[5], ufoot);
+                    Debug.Log($"Final ind: {ind}");
+                    Debug.Log($"UpFoot: {ufoot}, DownFoot: {dfoot}");
+                }
+                else if (ind == 3) {
+                    dfoot -= 1f;
+                    MoveLeg(legs[9], dfoot);
+                    Debug.Log($"Final ind: {ind}");
+                    Debug.Log($"UpFoot: {ufoot}, DownFoot: {dfoot}");
+                }
+                else if (ind == 4) {
+                    dfoot += 1f;
+                    MoveLeg(legs[9], dfoot);
+                    Debug.Log($"Final ind: {ind}");
+                    Debug.Log($"UpFoot: {ufoot}, DownFoot: {dfoot}");
+                }
+            }
+        }
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
 
+        Debug.Log(foot.transform.position.y);
+
         MoveImproveSinForward(len);
+
+        if (change_results[0] == 0 && Time.time > 0.1) {
+            change_positionLF();
+            change_results[0] = 1;
+        }
+
+        if (Time.time > 0.1) {
+            // MoveImproveSinForward(len, 0.5f);
+            // change_positionLF();
+            // MoveLF(len, 0.5f);
+        }
+
+        UpdateSpeedMeasurement();
+
+
+        if (Time.time > 5.0f) {
+            Debug.Log("Time1");
+            position();
+            Debug.Log("Time2");
+        }
+
+        Debug.Log(body.transform.position.y);
+
+        if (button) {
+            TROT(3f);
+        }
+
+        if (button) {
+            // Move(0.5f, -50f, 30f, 2f, -25f, 35f, 1.8f); // Walk
+            F_TROT(0.0f, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f); // Trot
+            // Walk();
+        }
+
+
+        Vector3 direction = footLF.transform.right.normalized; 
+        float rayLength = 0.05f;
+
+        Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
+
+
+        float stepDuration = 1f;
+        float currentTime = Time.time;
+        float dif = 1f;
+
+        if (currentTime - lastUpdateForwardTime >= stepDuration)
+        {
+            lastUpdateForwardTime = currentTime;
+
+            currentForwardStep = (currentForwardStep + 1) % 4;
+        }
+
+        // ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        // ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+        if (currentForwardStep == 0)
+        {
+            UpFoot -= dif;
+            MoveLeg(legs[5], UpFoot);
+            Debug.Log($"ind: {1}, position: {foot.transform.position}");
+            UpFoot += dif;
+            MoveLeg(legs[5], UpFoot);
+        }
+
+        else if (currentForwardStep == 1)
+        {
+            UpFoot += dif;
+            MoveLeg(legs[5], UpFoot);
+            Debug.Log($"ind: {2}, position: {foot.transform.position}");
+            UpFoot -= dif;
+            MoveLeg(legs[5], UpFoot);
+        }
+
+        else if (currentForwardStep == 2)
+        {
+            DownFoot += dif;
+            MoveLeg(legs[9], DownFoot);
+            Debug.Log($"ind: {3}, position: {foot.transform.position}");
+            DownFoot -= dif;
+            MoveLeg(legs[9], DownFoot);
+        }
+
+        else if (currentForwardStep == 3)
+        {
+            DownFoot -= dif;
+            MoveLeg(legs[9], DownFoot);
+            Debug.Log($"ind: {4}, position: {foot.transform.position}");
+            DownFoot += dif;
+            MoveLeg(legs[9], DownFoot);
+        }
 
         MoveForward(0.01f);
         MoveLeft(0.1f);
@@ -1342,24 +1696,24 @@ public class DoggyAgent : Agent
                 continuousActions[i] = 0.5f;
             }
         }
-        // MoveLeg(legs[11], 90);
-        //MoveLeg(legs[8], 90);
-        // MoveLeg(legs[11], 90);
+        MoveLeg(legs[11], 90);
+        MoveLeg(legs[8], 90);
+        MoveLeg(legs[11], 90);
 
-        // continuousActions[8] = 1;
-        // continuousActions[11] = 1;
+        continuousActions[8] = 1;
+        continuousActions[11] = 1;
 
-        // continuousActions[9] = Input.GetAxisRaw("Horizontal");
-        // continuousActions[11] = Input.GetAxisRaw("Vertical");
+        continuousActions[9] = Input.GetAxisRaw("Horizontal");
+        continuousActions[11] = Input.GetAxisRaw("Vertical");
     }
     
     public void FixedUpdate()
     {
-        body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
-        for (int i = 0; i < 12; i++)
-        {
-           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
-        }
+        // body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
+        // for (int i = 0; i < 12; i++)
+        // {
+        //    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+        // }
 
         RaycastHit hit;
         if (Physics.Raycast(body.transform.position, body.transform.right, out hit))
@@ -1367,24 +1721,24 @@ public class DoggyAgent : Agent
             if (hit.collider.gameObject == cube)
             {
                 AddReward(0.1f);
-                body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
-                for (int i = 0; i < 12; i++)
-                {
-                    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
-                }
+                // body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
+                // for (int i = 0; i < 12; i++)
+                // {
+                //     legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
+                // }
             }
             else
             {
                 //AddReward(-0.001f);
             }
         }
-        if (Math.Abs(-0.03 - body.transform.position.z) >= 0.02) {
-            AddReward(-100f);
-            EndEpisode();
-        }
-        if (Math.Abs(-0.03 - body.transform.position.z) <= 0.03) {
-            AddReward(1f);
-        }
+        // if (Math.Abs(-0.03 - body.transform.position.z) >= 0.02) {
+        //     AddReward(-100f);
+        //     EndEpisode();
+        // }
+        // if (Math.Abs(-0.03 - body.transform.position.z) <= 0.03) {
+        //     AddReward(1f);
+        // }
         Debug.DrawRay(body.transform.position, body.transform.right, Color.white);
     }
 
