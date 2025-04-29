@@ -1489,7 +1489,38 @@ public class DoggyAgent : Agent
         }
     }
 
-    
+    private void MoveArcForm(int legIndex, float phi, float period, float beta, float strideLengthX, float strideLengthY, float bodyLength, float height, float omega, float k, bool isStance){
+    phi = Mathf.Clamp(phi, -Mathf.PI, Mathf.PI);
+
+    float p_i = 0.0f;
+    if (phi < 0) {
+        p_i = -2 * phi / Mathf.PI - 1;
+
+    } 
+    else {
+        p_i = 2 * phi / Mathf.PI - 1;
+    }
+
+    float a_i_x = strideLengthX * period * beta;
+    float a_i_y = (strideLengthY + k * omega * bodyLength / 2) * beta * period;
+
+    float r_i_x = a_i_x * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
+    float r_i_y = a_i_y * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
+    float r_i_z;
+
+    if (isStance)
+    {
+        r_i_z = 0;
+    }
+    else
+    {
+        r_i_z = height * (-64 * Mathf.Pow(p_i, 6) + 192 * Mathf.Pow(p_i, 5) - 192 * Mathf.Pow(p_i, 4) + 64 * Mathf.Pow(p_i, 3));
+    }
+
+    Transform foot = legs[legIndex].transform;
+    Vector3 newPosition = startPosition[legIndex] + new Vector3(r_i_x, r_i_y, r_i_z);
+    foot.position = newPosition;
+}
 
 
     private void MoveDistSinForward(float r)
