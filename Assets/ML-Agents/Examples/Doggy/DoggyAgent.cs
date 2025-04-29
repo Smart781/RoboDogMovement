@@ -137,21 +137,7 @@ public class DoggyAgent : Agent
         lastUpdateLeftTime = 0f;
         currentLeftStep = 0;
 
-        //FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
-
-        // Vector3 startPosition = foot.transform.position;
-
-        // Vector3 direction = footLF.transform.right.normalized; // Нормализуем, чтобы длина была 1
-
-        // float rayLength = 0.05f;
-
-        // Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
-
-        // endPosition = startPosition + direction * rayLength;
-
-        // Debug.Log("Конечная точка луча: " + endPosition);
-
-        // Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
+        // line();
 
 
         // MoveLeg(legs[8], 90);
@@ -205,71 +191,7 @@ public class DoggyAgent : Agent
     {
         var actions = vectorAction.ContinuousActions;
 
-        // float val = -1f;
-        // int ind = -1;
-        // // float func_time = 0.0f;
-
-        // for (int i = 0; i < 3; i++)
-        // {
-        //     float current_action = ((actions[i] * 1f) + 1) / 2;
-        //     if (current_action > val) {
-        //         val = current_action;
-        //         ind = i;
-        //     }
-        // }
-
-        // if (compl) {
-        //     // Debug.Log(pred_ind);
-        //     var articulationBody = body.GetComponent<ArticulationBody>();
-            
-        //     bool res = false;
-        //     if (pred_ind == 0) {
-        //         // res = MoveForward(0.01f);
-        //         // AddReward(0.01f);
-        //         if (articulationBody != null)
-        //         {
-        //             articulationBody.centerOfMass = new Vector3(0.3f, 0, 0);
-        //         }
-        //         F_TROT(func_time, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f);
-        //         if (Time.time - func_time >= 4f) {
-        //             res = true;
-        //         }
-        //     }
-        //     else if (pred_ind == 1) {
-        //         if (articulationBody != null)
-        //         {
-        //             articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
-        //         }
-        //         res = MoveRight(0.1f);
-        //     }
-        //     else {
-        //         if (articulationBody != null)
-        //         {
-        //             articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
-        //         }
-        //         res = MoveLeft(0.1f);
-        //     }
-        //     if (res) {
-        //         compl = false;
-        //     }
-        // }
-        // else {
-        //     if (val >= 0.5) {
-        //         //pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
-        //         for (int i = 0; i < 12; i++) {
-        //             MoveLeg(legs[i], 0);
-        //         }
-        //         pred_ind = ind;
-        //         compl = true;
-        //         func_time = Time.time;
-        //     }
-        // }
-
-        //Debug.Log(foot.transform.position);
-        // Debug.Log(foot.transform.right);
-        // Debug.Log(foot.transform.position);
-        //Debug.Log(FootPos);
-        //Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
+        // action_loop();
 
         float time = Time.time;
 
@@ -282,10 +204,10 @@ public class DoggyAgent : Agent
         // Debug.DrawRay(footLF.transform.position, footLF.transform.right.normalized * len, Color.black);
 
 
-        // if (!flag) {
-        //     startPosition = foot.transform.position;
-        //     endPosition = foot.transform.position + foot.transform.right.normalized * len;
-        // }
+        if (!flag) {
+            startPosition = foot.transform.position;
+            endPosition = foot.transform.position + foot.transform.right.normalized * len;
+        }
 
         Debug.DrawRay(startPosition[0], Vector3.up * 1f, Color.green);
 
@@ -305,36 +227,7 @@ public class DoggyAgent : Agent
         // TROT(3f);
 
 
-        // for (int i = 4; i < 12; i++)
-        // {
-        //     if (i % 4 == 2 || i % 4 == 3) {
-        //         continue;
-        //     }
-        //     float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
-        //     if (prev_actions[i] != actions[i]) {
-        //         if (i % 4 == 0) {
-        //             MoveLeg(legs[i], angle);
-        //             MoveLeg(legs[i + 3], angle);
-        //         }
-        //         else {
-        //             MoveLeg(legs[i], angle);
-        //             MoveLeg(legs[i + 1], angle);
-        //         }
-        //         //Debug.Log(i);
-        //         //MoveLeg(legs[check_ind], angle);
-        //     }
-        //     prev_actions[i] = actions[i];
-        //     // if ((i % 4) != 0 && (i % 4) != 3) {
-        //     //     if (i % 4 == 1) {
-        //     //         float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
-        //     //         MoveLeg(legs[i], angle);
-        //     //     }
-        //     //     else {
-        //     //         float angle = Mathf.Lerp(legs[i - 1].xDrive.lowerLimit, legs[i - 1].xDrive.upperLimit, (actions[i - 1] + 1) * 0.5f);
-        //     //         MoveLeg(legs[i], angle);
-        //     //     }
-        //     // }
-        // }
+        // special_loop();
         
         // MoveLeg(legs[8], 90);
         // MoveLeg(legs[11], 90);
@@ -358,24 +251,143 @@ public class DoggyAgent : Agent
             EndEpisode();
         }
 
-        // if (distanceReward < 0)
-        // {
-        //     AddReward(-0.01f);
-        // }
+        if (distanceReward < 0)
+        {
+            AddReward(-0.01f);
+        }
 
-        // if (body.velocity.magnitude < 0.1f)
-        // {
-        //     AddReward(-0.01f);
-        // }
+        if (body.velocity.magnitude < 0.1f)
+        {
+            AddReward(-0.01f);
+        }
 
-        // if (Time.time > 0.1f) {
-        //     Debug.Log("YES");
-        //     foot.transform.RotateAround(endPosition, Vector3.up, 30 * Time.deltaTime);
-        // }
+        if (Time.time > 0.1f) {
+            Debug.Log("YES");
+            foot.transform.RotateAround(endPosition, Vector3.up, 30 * Time.deltaTime);
+        }
 
         // if ((Math.Abs(0.17 - body.transform.position.y) >= 0.025f) || !button) {
         //     position();
         // }
+    }
+
+    private void line() {
+        FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
+
+        Vector3 startPosition = foot.transform.position;
+
+        Vector3 direction = footLF.transform.right.normalized; 
+
+        float rayLength = 0.05f;
+
+        Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
+
+        endPosition = startPosition + direction * rayLength;
+
+        Debug.Log("Конечная точка луча: " + endPosition);
+
+        Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
+    }
+
+    private void action_loop() {
+        float val = -1f;
+        int ind = -1;
+        // float func_time = 0.0f;
+
+        for (int i = 0; i < 3; i++)
+        {
+            float current_action = ((actions[i] * 1f) + 1) / 2;
+            if (current_action > val) {
+                val = current_action;
+                ind = i;
+            }
+        }
+
+        if (compl) {
+            // Debug.Log(pred_ind);
+            var articulationBody = body.GetComponent<ArticulationBody>();
+            
+            bool res = false;
+            if (pred_ind == 0) {
+                // res = MoveForward(0.01f);
+                // AddReward(0.01f);
+                if (articulationBody != null)
+                {
+                    articulationBody.centerOfMass = new Vector3(0.3f, 0, 0);
+                }
+                F_TROT(func_time, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f);
+                if (Time.time - func_time >= 4f) {
+                    res = true;
+                }
+            }
+            else if (pred_ind == 1) {
+                if (articulationBody != null)
+                {
+                    articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
+                }
+                res = MoveRight(0.1f);
+            }
+            else {
+                if (articulationBody != null)
+                {
+                    articulationBody.centerOfMass = new Vector3(0.1f, 0, 0);
+                }
+                res = MoveLeft(0.1f);
+            }
+            if (res) {
+                compl = false;
+            }
+        }
+        else {
+            if (val >= 0.5) {
+                //pred_speed = ((actions[3 + ind] * 1f) + 1) / 2;
+                for (int i = 0; i < 12; i++) {
+                    MoveLeg(legs[i], 0);
+                }
+                pred_ind = ind;
+                compl = true;
+                func_time = Time.time;
+            }
+        }
+
+        Debug.Log(foot.transform.position);
+        Debug.Log(foot.transform.right);
+        Debug.Log(foot.transform.position);
+        Debug.Log(FootPos);
+        Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
+    }
+
+    private void special_loop() {
+        for (int i = 4; i < 12; i++)
+        {
+            if (i % 4 == 2 || i % 4 == 3) {
+                continue;
+            }
+            float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+            if (prev_actions[i] != actions[i]) {
+                if (i % 4 == 0) {
+                    MoveLeg(legs[i], angle);
+                    MoveLeg(legs[i + 3], angle);
+                }
+                else {
+                    MoveLeg(legs[i], angle);
+                    MoveLeg(legs[i + 1], angle);
+                }
+                //Debug.Log(i);
+                //MoveLeg(legs[check_ind], angle);
+            }
+            prev_actions[i] = actions[i];
+            if ((i % 4) != 0 && (i % 4) != 3) {
+                if (i % 4 == 1) {
+                    float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+                    MoveLeg(legs[i], angle);
+                }
+                else {
+                    float angle = Mathf.Lerp(legs[i - 1].xDrive.lowerLimit, legs[i - 1].xDrive.upperLimit, (actions[i - 1] + 1) * 0.5f);
+                    MoveLeg(legs[i], angle);
+                }
+            }
+        }
     }
 
     private void position() {
