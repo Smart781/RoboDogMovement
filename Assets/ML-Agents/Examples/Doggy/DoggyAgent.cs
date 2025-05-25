@@ -47,12 +47,12 @@ public class DoggyAgent : Agent
     private int currentLeftStep = 0;
     float dfoot = 0.0f;
     float ufoot = 0.0f;
-    //private bool change = false;
+    private bool change = false;
     private float ang = 10f;
-    // private int pred_ind = -1;
+    private int pred_ind = -1;
     //private float pred_speed = 1f;
-    // private bool compl = false;
-    // float func_time = 0.0f;
+    private bool compl = false;
+    float func_time = 0.0f;
     private Vector3[] startPosition = new Vector3[4];
     private Vector3[] endPosition = new Vector3[4];
     Vector4 UpFoot = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
@@ -191,7 +191,7 @@ public class DoggyAgent : Agent
     {
         var actions = vectorAction.ContinuousActions;
 
-        // action_loop();
+        // spec_func();
 
         float time = Time.time;
 
@@ -204,10 +204,7 @@ public class DoggyAgent : Agent
         // Debug.DrawRay(footLF.transform.position, footLF.transform.right.normalized * len, Color.black);
 
 
-        if (!flag) {
-            startPosition = foot.transform.position;
-            endPosition = foot.transform.position + foot.transform.right.normalized * len;
-        }
+        // stable_cond(vectorAction);
 
         Debug.DrawRay(startPosition[0], Vector3.up * 1f, Color.green);
 
@@ -227,8 +224,8 @@ public class DoggyAgent : Agent
         // TROT(3f);
 
 
-        // special_loop();
-        
+        // cyc_cond();
+
         // MoveLeg(legs[8], 90);
         // MoveLeg(legs[11], 90);
 
@@ -236,7 +233,7 @@ public class DoggyAgent : Agent
 
         float currentDistanceToTarget = Vector3.Distance(body.transform.position, cube.transform.position);
         float distanceReward = distToTarget - currentDistanceToTarget;
-        AddReward(distanceReward);
+        // AddReward(distanceReward);
         distToTarget = currentDistanceToTarget;
 
         if (currentDistanceToTarget < 1f)
@@ -261,35 +258,34 @@ public class DoggyAgent : Agent
             AddReward(-0.01f);
         }
 
-        if (Time.time > 0.1f) {
-            Debug.Log("YES");
-            foot.transform.RotateAround(endPosition, Vector3.up, 30 * Time.deltaTime);
-        }
-
-        // if ((Math.Abs(0.17 - body.transform.position.y) >= 0.025f) || !button) {
-        //     position();
+        // if (Time.time > 0.1f) {
+        //     Debug.Log("YES");
+        //     foot.transform.RotateAround(endPosition, Vector3.up, 30 * Time.deltaTime);
         // }
+
+        // stable_cond();
     }
 
     private void line() {
-        FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
+        Vector3 FootPos = transform.TransformPoint(foot.transform.position) + foot.transform.right * 0.5f;
 
-        Vector3 startPosition = foot.transform.position;
+        Vector3 startPos = foot.transform.position;
 
-        Vector3 direction = footLF.transform.right.normalized; 
+        Vector3 direction = footLF.transform.right.normalized;
 
         float rayLength = 0.05f;
 
-        Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
+        // Debug.DrawRay(startPos[0], direction * rayLength, Color.black);
 
-        endPosition = startPosition + direction * rayLength;
+        Vector3 endPos = startPos + direction * rayLength;
 
-        Debug.Log("Конечная точка луча: " + endPosition);
+        Debug.Log("Конечная точка луча: " + endPos);
 
-        Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
+        // Debug.Log("Конечная точка вертикального луча: " + verticalEndPosition);
     }
 
-    private void action_loop() {
+    private void spec_func(ActionBuffers vectorAction) {
+        var actions = vectorAction.ContinuousActions;
         float val = -1f;
         int ind = -1;
         // float func_time = 0.0f;
@@ -353,17 +349,30 @@ public class DoggyAgent : Agent
         Debug.Log(foot.transform.position);
         Debug.Log(foot.transform.right);
         Debug.Log(foot.transform.position);
-        Debug.Log(FootPos);
+        // Debug.Log(FootPos);
         Debug.DrawRay(foot.transform.position, foot.transform.right, Color.black);
     }
 
-    private void special_loop() {
-        for (int i = 4; i < 12; i++)
+    private void stable_cond() {
+        if ((Math.Abs(0.17 - body.transform.position.y) >= 0.025f) || !button) {
+            AddReward(-0.1f);
+            // position();
+        }
+        else {
+            AddReward(1000f);
+            EndEpisode();
+        }
+    }
+
+    private void cyc_cond(ActionBuffers vectorAction) {
+        var actions = vectorAction.ContinuousActions;
+        for (int i = 0; i < 12; i++)
         {
             if (i % 4 == 2 || i % 4 == 3) {
                 continue;
             }
             float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+            MoveLeg(legs[i], angle);
             if (prev_actions[i] != actions[i]) {
                 if (i % 4 == 0) {
                     MoveLeg(legs[i], angle);
@@ -379,11 +388,11 @@ public class DoggyAgent : Agent
             prev_actions[i] = actions[i];
             if ((i % 4) != 0 && (i % 4) != 3) {
                 if (i % 4 == 1) {
-                    float angle = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
+                    float ang = Mathf.Lerp(legs[i].xDrive.lowerLimit, legs[i].xDrive.upperLimit, (actions[i] + 1) * 0.5f);
                     MoveLeg(legs[i], angle);
                 }
                 else {
-                    float angle = Mathf.Lerp(legs[i - 1].xDrive.lowerLimit, legs[i - 1].xDrive.upperLimit, (actions[i - 1] + 1) * 0.5f);
+                    float ang = Mathf.Lerp(legs[i - 1].xDrive.lowerLimit, legs[i - 1].xDrive.upperLimit, (actions[i - 1] + 1) * 0.5f);
                     MoveLeg(legs[i], angle);
                 }
             }
@@ -1489,38 +1498,43 @@ public class DoggyAgent : Agent
         }
     }
 
+    private void Func() {
+        Debug.Log("YKJ");
+    }
+
     private void MoveArcForm(int legIndex, float phi, float period, float beta, float strideLengthX, float strideLengthY, float bodyLength, float height, float omega, float k, bool isStance){
-    phi = Mathf.Clamp(phi, -Mathf.PI, Mathf.PI);
+        phi = Mathf.Clamp(phi, -Mathf.PI, Mathf.PI);
 
-    float p_i = 0.0f;
-    if (phi < 0) {
-        p_i = -2 * phi / Mathf.PI - 1;
+        float p_i = 0.0f;
+        if (phi < 0) {
+            p_i = -2 * phi / Mathf.PI - 1;
 
-    } 
-    else {
-        p_i = 2 * phi / Mathf.PI - 1;
+        } 
+        else {
+            p_i = 2 * phi / Mathf.PI - 1;
+        }
+
+        float a_i_x = strideLengthX * period * beta;
+        float a_i_y = (strideLengthY + k * omega * bodyLength / 2) * beta * period;
+
+        float r_i_x = a_i_x * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
+        float r_i_y = a_i_y * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
+        float r_i_z;
+
+        if (isStance)
+        {
+            r_i_z = 0;
+        }
+        else
+        {
+            r_i_z = height * (-64 * Mathf.Pow(p_i, 6) + 192 * Mathf.Pow(p_i, 5) - 192 * Mathf.Pow(p_i, 4) + 64 * Mathf.Pow(p_i, 3));
+        }
+
+        Transform foot = legs[legIndex].transform;
+        Vector3 newPosition = startPosition[legIndex] + new Vector3(r_i_x, r_i_y, r_i_z);
+        foot.position = newPosition;
     }
 
-    float a_i_x = strideLengthX * period * beta;
-    float a_i_y = (strideLengthY + k * omega * bodyLength / 2) * beta * period;
-
-    float r_i_x = a_i_x * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
-    float r_i_y = a_i_y * (6 * Mathf.Pow(p_i, 5) - 15 * Mathf.Pow(p_i, 4) + 10 * Mathf.Pow(p_i, 3) - 0.5f);
-    float r_i_z;
-
-    if (isStance)
-    {
-        r_i_z = 0;
-    }
-    else
-    {
-        r_i_z = height * (-64 * Mathf.Pow(p_i, 6) + 192 * Mathf.Pow(p_i, 5) - 192 * Mathf.Pow(p_i, 4) + 64 * Mathf.Pow(p_i, 3));
-    }
-
-    Transform foot = legs[legIndex].transform;
-    Vector3 newPosition = startPosition[legIndex] + new Vector3(r_i_x, r_i_y, r_i_z);
-    foot.position = newPosition;
-}
 
 
     private void MoveDistSinForward(float r)
@@ -1608,13 +1622,174 @@ public class DoggyAgent : Agent
         }
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
+    private bool MoveImpRight(float speed)
     {
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        if (currentTime - lastUpdateRightTime >= stepDuration)
+        {
+            lastUpdateRightTime = currentTime;
+
+            currentRightStep = (currentRightStep + 1) % 11;
+            
+        }
+
+        //ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        //ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+
+        if (true) {
+            if (currentRightStep == 0)
+            {
+                ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 1)
+            {
+                MoveLeg(legs[9], 30);
+                MoveLeg(legs[10], 30);
+            }
+            else if (currentRightStep == 2)
+            {
+                MoveLeg(legs[1], -ang);
+            }
+            else if (currentRightStep == 3)
+            {
+                MoveLeg(legs[5], 5);
+                MoveLeg(legs[6], 5);
+                // ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 4)
+            {
+                ApplySinMovement4(new[] { 9, 10 });
+            }
+            else if (currentRightStep == 5)
+            {
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentRightStep == 6)
+            {
+                MoveLeg(legs[8], 30);
+                MoveLeg(legs[11], 30);
+            }
+            else if (currentRightStep == 7)
+            {
+                MoveLeg(legs[0], ang);
+            }
+            else if (currentRightStep == 8)
+            {
+                MoveLeg(legs[4], 5);
+                MoveLeg(legs[7], 5);
+                // ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 9)
+            {
+                ApplySinMovement4(new[] { 8, 11 });
+            }
+            else if (currentRightStep == 10)
+            {
+                MoveLeg(legs[1], 0);
+                MoveLeg(legs[0], 0);
+                MoveLeg(legs[2], 0);
+                MoveLeg(legs[3], 0);
+            }
+        }
+
+        if (currentRightStep == 9) {
+            // Debug.Log("Stop");
+            return true;
+        }
+        else {
+            return false;
+        }
+    } 
+
+    private bool MoveImpLeft(float speed)
+    {
+        float stepDuration = speed;
+        float currentTime = Time.time;
+
+        if (currentTime - lastUpdateRightTime >= stepDuration)
+        {
+            lastUpdateRightTime = currentTime;
+
+            currentRightStep = (currentRightStep + 1) % 11;
+            
+        }
+
+        if (true) {
+            if (currentRightStep == 0)
+            {
+                ApplySinMovement1(new[] { 4, 7 });
+            }
+            else if (currentRightStep == 1)
+            {
+                MoveLeg(legs[8], 30);
+                MoveLeg(legs[11], 30);
+            }
+            else if (currentRightStep == 2)
+            {
+                MoveLeg(legs[0], ang);
+            }
+            else if (currentRightStep == 3)
+            {
+                MoveLeg(legs[4], 5);
+                MoveLeg(legs[7], 5);
+                // ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 4)
+            {
+                ApplySinMovement4(new[] { 8, 11 });
+            }
+            else if (currentRightStep == 5)
+            {
+                ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 6)
+            {
+                MoveLeg(legs[9], 30);
+                MoveLeg(legs[10], 30);
+            }
+            else if (currentRightStep == 7)
+            {
+                MoveLeg(legs[1], -ang);
+            }
+            else if (currentRightStep == 8)
+            {
+                MoveLeg(legs[5], 5);
+                MoveLeg(legs[6], 5);
+                // ApplySinMovement1(new[] { 5, 6 });
+            }
+            else if (currentRightStep == 9)
+            {
+                ApplySinMovement4(new[] { 9, 10 });
+            }
+            else if (currentRightStep == 10)
+            {
+                MoveLeg(legs[0], 0);
+                MoveLeg(legs[1], 0);
+                MoveLeg(legs[3], 0);
+                MoveLeg(legs[2], 0);
+            }
+        }
+
+        if (currentRightStep == 9) {
+            // Debug.Log("Stop");
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private void s_func(ActionBuffers actionsOut) {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+
+        // MoveImpRight(0.05f);
+        MoveImpLeft(0.05f);
 
         Debug.Log(foot.transform.position.y);
 
-        MoveImproveSinForward(len);
+        // MoveImproveSinForward(len);
 
         if (change_results[0] == 0 && Time.time > 0.1) {
             change_positionLF();
@@ -1644,12 +1819,14 @@ public class DoggyAgent : Agent
 
         if (button) {
             // Move(0.5f, -50f, 30f, 2f, -25f, 35f, 1.8f); // Walk
+            Debug.Log("YYY");
             F_TROT(0.0f, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f); // Trot
             // Walk();
         }
 
 
-        Vector3 direction = footLF.transform.right.normalized; 
+        Vector3 direction = footLF.transform.right.normalized;
+
         float rayLength = 0.05f;
 
         Debug.DrawRay(startPosition[0], direction * rayLength, Color.black);
@@ -1671,38 +1848,38 @@ public class DoggyAgent : Agent
 
         if (currentForwardStep == 0)
         {
-            UpFoot -= dif;
-            MoveLeg(legs[5], UpFoot);
+            UpFoot[0] -= dif;
+            MoveLeg(legs[5], UpFoot[0]);
             Debug.Log($"ind: {1}, position: {foot.transform.position}");
-            UpFoot += dif;
-            MoveLeg(legs[5], UpFoot);
+            UpFoot[0] += dif;
+            MoveLeg(legs[5], UpFoot[0]);
         }
 
         else if (currentForwardStep == 1)
         {
-            UpFoot += dif;
-            MoveLeg(legs[5], UpFoot);
+            UpFoot[0] += dif;
+            MoveLeg(legs[5], UpFoot[0]);
             Debug.Log($"ind: {2}, position: {foot.transform.position}");
-            UpFoot -= dif;
-            MoveLeg(legs[5], UpFoot);
+            UpFoot[0] -= dif;
+            MoveLeg(legs[5], UpFoot[0]);
         }
 
         else if (currentForwardStep == 2)
         {
-            DownFoot += dif;
-            MoveLeg(legs[9], DownFoot);
+            DownFoot[0] += dif;
+            MoveLeg(legs[9], DownFoot[0]);
             Debug.Log($"ind: {3}, position: {foot.transform.position}");
-            DownFoot -= dif;
-            MoveLeg(legs[9], DownFoot);
+            DownFoot[0] -= dif;
+            MoveLeg(legs[9], DownFoot[0]);
         }
 
         else if (currentForwardStep == 3)
         {
-            DownFoot -= dif;
-            MoveLeg(legs[9], DownFoot);
+            DownFoot[0] -= dif;
+            MoveLeg(legs[9], DownFoot[0]);
             Debug.Log($"ind: {4}, position: {foot.transform.position}");
-            DownFoot += dif;
-            MoveLeg(legs[9], DownFoot);
+            DownFoot[0] += dif;
+            MoveLeg(legs[9], DownFoot[0]);
         }
 
         MoveForward(0.01f);
@@ -1715,14 +1892,19 @@ public class DoggyAgent : Agent
 
         if (change) {
             Debug.Log("YES");
-            ApplySinMovement_1(continuousActions, new[] { 0, 1, 2, 3 });
-            ApplySinMovement_2(continuousActions, new[] { 4, 5, 6, 7 });
-            ApplySinMovement_3(continuousActions, new[] { 8, 9, 10, 11 });
+            ApplySinMovement_1(new[] { 0, 1});
+            ApplySinMovement_1(new[] { 2, 3});
+            ApplySinMovement_2(new[] { 4, 5});
+            ApplySinMovement_2(new[] { 6, 7 });
+            ApplySinMovement_3(new[] { 8, 9, 10, 11 });
+            ApplySinMovement_3(new[] { 10, 11 });
             //change = false;
         }
 
-        ApplySinMovement_1(new[] { 0, 1, 2, 3 });
-        ApplySinMovement_2(new[] { 4, 5, 6, 7 });
+        ApplySinMovement_1(new[] { 0, 1});
+        ApplySinMovement_1(new[] { 2, 3});
+        ApplySinMovement_2(new[] { 4, 5});
+        ApplySinMovement_2(new[] { 6, 7 });
         ApplySinMovement_3(new[] { 8, 10 });
 
         for (int i = 0; i < 12; i++)
@@ -1743,20 +1925,39 @@ public class DoggyAgent : Agent
         MoveLeg(legs[8], 90);
         MoveLeg(legs[11], 90);
 
-        continuousActions[8] = 1;
-        continuousActions[11] = 1;
+        // continuousActions[8] = 1;
+        // continuousActions[11] = 1;
 
-        continuousActions[9] = Input.GetAxisRaw("Horizontal");
-        continuousActions[11] = Input.GetAxisRaw("Vertical");
+        continuousActions[4] = Input.GetAxisRaw("Horizontal");
+        // continuousActions[5] = Input.GetAxisRaw("Vertical");
+        if (Input.GetAxisRaw("Vertical") == 1) {
+            Func();
+        }
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
+
+        // MoveImpRight(0.05f);
+        MoveImpLeft(0.05f);
+
+        // s_func(actionsOut);
+
+        continuousActions[4] = Input.GetAxisRaw("Horizontal");
+        // continuousActions[5] = Input.GetAxisRaw("Vertical");
+        if (Input.GetAxisRaw("Vertical") == 1) {
+            Func();
+        }
     }
     
     public void FixedUpdate()
     {
-        // body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
-        // for (int i = 0; i < 12; i++)
-        // {
-        //    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
-        // }
+        body.AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove);
+        for (int i = 0; i < 12; i++)
+        {
+           legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 20f);
+        }
 
         RaycastHit hit;
         if (Physics.Raycast(body.transform.position, body.transform.right, out hit))
@@ -1764,18 +1965,18 @@ public class DoggyAgent : Agent
             if (hit.collider.gameObject == cube)
             {
                 AddReward(0.1f);
-                // body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
-                // for (int i = 0; i < 12; i++)
-                // {
-                //     legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
-                // }
+                body.AddForce(2f * strenghtMove * (cube.transform.position - body.transform.position).normalized);
+                for (int i = 0; i < 12; i++)
+                {
+                    legs[i].AddForce((cube.transform.position - body.transform.position).normalized * strenghtMove / 10f);
+                }
             }
             else
             {
                 //AddReward(-0.001f);
             }
         }
-        // if (Math.Abs(-0.03 - body.transform.position.z) >= 0.02) {
+        // if (Math.Abs(0.17 - body.transform.position.y) >= 0.025f) {
         //     AddReward(-100f);
         //     EndEpisode();
         // }
