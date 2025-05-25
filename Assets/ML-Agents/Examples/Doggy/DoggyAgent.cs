@@ -61,6 +61,9 @@ public class DoggyAgent : Agent
     Vector4 change_results = new Vector4(0, 0, 0, 0);
     float[] prev_actions = new float[12];
     // private bool flag = false;
+    private int val_move = 0;
+    private int val_eps = 0;
+
 
     private float FootFlag1 = -1;
     private float len = 0.02f;
@@ -99,10 +102,10 @@ public class DoggyAgent : Agent
 
     public void ResetDog()
     {
-        // Quaternion newRot = Quaternion.Euler(-90, 0, Random.Range(0f, 360f));
+        Quaternion newRot = Quaternion.Euler(-90, 0, Random.Range(0f, 360f));
 
 
-        // body.TeleportRoot(defPos, newRot);
+        body.TeleportRoot(defPos, newRot);
         //body.TeleportRoot(defPos, defRot); ***
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
@@ -146,6 +149,7 @@ public class DoggyAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        val_eps += 1;
         ResetDog();
         //m_Oscillator.ManagedReset(); ***
 
@@ -312,6 +316,8 @@ public class DoggyAgent : Agent
                     articulationBody.centerOfMass = new Vector3(0.3f, 0, 0);
                 }
                 F_TROT(func_time, 0.5f, -60f, 30f, 2f, -35f, 35f, 1.8f);
+                val_move += 1;
+                AddReward(-1f);
                 if (Time.time - func_time >= 4f) {
                     res = true;
                 }
